@@ -1,6 +1,5 @@
-Building the JavaScript Compiler
+JavaScript Compiler Build
 -----------------------
 
 <h3>Build Prerequisites</h3>
-<br>
 Hardware Requirements:
