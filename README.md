@@ -1,5 +1,5 @@
 Building the JavaScript Compiler
 -----------------------
 
-Build Prerequisites
-Hardward Requirements:
+Build Prerequisites<br>
+Hardware Requirements:
