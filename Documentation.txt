@@ -1,0 +1,17 @@
+JavaScript Compiler Build and Deploy Documentation
+
+I. Overview
+
+This document covers the basic steps needed to build and deploy the JavaScript compiler software.
+
+II. Clone the source
+
+Get the most up-to-date source code from Christopher Lee's GitHub code repository.
+
+git clone https://github.com/chriskwlee/Compiler
+
+III. Building
+
+IV. Running
+
+V. Deploying
