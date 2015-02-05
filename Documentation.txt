@@ -6,7 +6,9 @@ This document covers the basic steps needed to build and deploy the JavaScript c
 
 II. Clone the source
 
-Get the most up-to-date source code from Christopher Lee's GitHub code repository.
+Visit https://github.io/chriskwlee/Compiler for the most up-to-date version of the JavaScript compiler.
+
+Alternatively, get the most up-to-date source code from Christopher Lee's GitHub code repository.
 
 git clone https://github.com/chriskwlee/Compiler
 
