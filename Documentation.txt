@@ -10,8 +10,8 @@ Get the most up-to-date source code from Christopher Lee's GitHub code repositor
 
 git clone https://github.com/chriskwlee/Compiler
 
-III. Building
+III. Running
 
-IV. Running
+Open the corresponding HTML file linked to the JavaScript compiler. Insert code to be compiled, then run.
 
 V. Deploying
