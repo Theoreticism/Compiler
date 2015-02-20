@@ -6,6 +6,7 @@ var inString;
 var currentChar;
 var tokenized;
 var token = {
+
 	T_LBrace: "T_LBrace",   // {
 	T_RBrace: "T_RBrace",   // }
 	T_LParen: "T_LParen",   // (
@@ -19,19 +20,35 @@ var token = {
 	T_Keyword: "T_Keyword"; // print, while, if
 	T_Type: "T_Type";       // int, string, boolean
 	T_ID: "T_ID";           // [a-Z]
-	T_Num: "T_Number";      // [0-9]
+	T_Number: "T_Number";      // [0-9]
 	T_Space: "T_Space";     // \s (whitespace metacharacter)
+
 };
 
+/**
+ * Handles lexing operations.
+ */
 function lexer() {
 	index = 0;
 	lineNumber = 1;
 	linePosition = 0;
 	currentToken = "";
-	inString = false;				//check if we are in string
-	currentChar = nextChar();		//get next character
-	while (currentChar != "") {		//match method compares string with regex
-		if currentChar.match(/\$/))
+	inString = false; //check if we are in string
+	for (var i = 0; i < source.length; i++) {
+		currentChar = source[i];
+		
+		// Input after end of file ignored
+		if ((currentChar.match(/\$/)) && (i < source.length - 1)) {
+			printOutput("Warning: Input found after EOF ignored<br />");
+			return;
+		}
+		
+		// Handle reaching end of file (with or without EOF symbol ($))
+		if ((currentChar != '$') && (i == source.length-1) && !inString) {
+			
+		}
+		
+		tokenized = false;
 	}
 }
 
@@ -49,17 +66,6 @@ function textBuffer() {
 	function add(b) { buffer += b; }
 	function get() { return buffer; }
 	function clear() { buffer = ""; }
-}
-
-function nextChar() {
-	var next = source.charAt(index++);
-	if (next.match(/\n/)) {
-		lineNumber++;
-		linePosition = 0;
-	} else {
-		linePosition++;
-	}
-	return next;
 }
 
 /**
@@ -80,7 +86,7 @@ function idToken(lineNumber, linePosition, value) {
 			tokens.push({tokens.T_ID, lineNumber, linePosition, value});
 			return true;
 		} else if (value.match(/[0-9]/)) {
-			tokens.push({tokens.T_Num, lineNumber, linePosition, value});
+			tokens.push({tokens.T_Number, lineNumber, linePosition, value});
 			return true;
 		}
 	}
