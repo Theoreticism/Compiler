@@ -5,6 +5,23 @@ var currentToken;
 var inString;
 var currentChar;
 var tokenized;
+var token = {
+	T_LBrace: "T_LBrace",   // {
+	T_RBrace: "T_RBrace",   // }
+	T_LParen: "T_LParen",   // (
+	T_RParen: "T_RParen",   // )
+	T_Assign: "T_Assign";   // =
+	T_Boolop: "T_Boolop";   // ==, !=
+	T_EOF: "T_EOF";         // $
+	T_Plus: "T_Plus";       // +
+	T_Quote: "T_Quote";     // "
+	T_Boolval: "T_Boolval"; // true, false
+	T_Keyword: "T_Keyword"; // print, while, if
+	T_Type: "T_Type";       // int, string, boolean
+	T_ID: "T_ID";           // [a-Z]
+	T_Num: "T_Number";      // [0-9]
+	T_Space: "T_Space";     // \s (whitespace metacharacter)
+};
 
 function lexer() {
 	index = 0;
