@@ -1,6 +1,6 @@
 //TODO: Verbose?
 
-var input;
+var source;
 var tokens;
 var cst;
 var ast;
@@ -16,10 +16,11 @@ function init() {
 	editor.getSession().setMode("ace/mode/javascript");
 	
 	$("#compile").on("click", function(){
-		input = editor.getValue() + " ";
+		source = editor.getValue() + " ";
 		tokens = [];
 		clearOutput();
-		printOutput("Test output");
+		printOutput("Compiling");
+		lexer();
 	});
 }
 
