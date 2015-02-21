@@ -27,6 +27,7 @@ var token = {
 
 /**
  * Handles lexing operations: parses source code and generates token list.
+ * Attempts token creation after reaching whitespace or newline (or more?)
  */
 function lexer() {
 	index = 0;
@@ -47,17 +48,27 @@ function lexer() {
 		if ((currentChar != '$') && (i == source.length-1) && !inString) {
 			if (!tokenized) {
 				textBuffer.add(source[i]);
-				var temp = idToken(lineNumber, linePosition, textBuffer.get());
-				if (!temp) {
-					printOutput("Lex Error: Invalid token '{2}' at line {0} character {1}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
+					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+				}
 			}
 			printOutput("Warning: End of file character not found. Appending an EOF character.<br />");
 			idToken('$', lineNumber);
 		}
 		
-		// If no token is recognized, advance buffer
+		// Matching whitespace
+		if (currentChar.match(/\s/)) {
+			if (inString) {
+				tokens.push({tokens.T_Space, lineNumber, linePosition, value});
+				tokenized = true;
+			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
+				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+			}
+		}
+		
+		// If no token is recognized and none has been created, advance buffer
 		if (!tokenized) {
-			textBuffer.add(source[i]);
+			textBuffer.add(currentChar);
 		}
 		
 		tokenized = false;
