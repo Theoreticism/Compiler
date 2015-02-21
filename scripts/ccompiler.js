@@ -19,8 +19,10 @@ function init() {
 		source = editor.getValue() + " ";
 		tokens = [];
 		clearOutput();
-		printOutput("Compiling");
-		lexer();
+		printOutput("Compiling...");
+		if (lexer()) {
+			printOutput("Lex successful!");
+		}
 	});
 }
 

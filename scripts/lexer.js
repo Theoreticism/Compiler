@@ -11,22 +11,22 @@ var token = {
 	T_RBrace: "T_RBrace",   // }
 	T_LParen: "T_LParen",   // (
 	T_RParen: "T_RParen",   // )
-	T_Assign: "T_Assign";   // =
-	T_Boolop: "T_Boolop";   // ==, !=
-	T_EOF: "T_EOF";         // $
-	T_Plus: "T_Plus";       // +
-	T_Quote: "T_Quote";     // "
-	T_Boolval: "T_Boolval"; // true, false
-	T_Keyword: "T_Keyword"; // print, while, if
-	T_Type: "T_Type";       // int, string, boolean
-	T_ID: "T_ID";           // [a-Z]
-	T_Number: "T_Number";      // [0-9]
-	T_Space: "T_Space";     // \s (whitespace metacharacter)
+	T_Assign: "T_Assign",   // =
+	T_Boolop: "T_Boolop",   // ==, !=
+	T_EOF: "T_EOF",         // $
+	T_Plus: "T_Plus",       // +
+	T_Quote: "T_Quote",     // "
+	T_Boolval: "T_Boolval", // true, false
+	T_Keyword: "T_Keyword", // print, while, if
+	T_Type: "T_Type",       // int, string, boolean
+	T_ID: "T_ID",           // [a-Z]
+	T_Number: "T_Number",   // [0-9]
+	T_Space: "T_Space"      // \s (whitespace metacharacter)
 
 };
 
 /**
- * Handles lexing operations.
+ * Handles lexing operations: parses source code and generates token list.
  */
 function lexer() {
 	index = 0;
@@ -45,7 +45,19 @@ function lexer() {
 		
 		// Handle reaching end of file (with or without EOF symbol ($))
 		if ((currentChar != '$') && (i == source.length-1) && !inString) {
-			
+			if (!tokenized) {
+				textBuffer.add(source[i]);
+				var temp = idToken(lineNumber, linePosition, textBuffer.get());
+				if (!temp) {
+					printOutput("Lex Error: Invalid token '{2}' at line {0} character {1}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+			}
+			printOutput("Warning: End of file character not found. Appending an EOF character.<br />");
+			idToken('$', lineNumber);
+		}
+		
+		// If no token is recognized, advance buffer
+		if (!tokenized) {
+			textBuffer.add(source[i]);
 		}
 		
 		tokenized = false;
@@ -56,8 +68,8 @@ function lexer() {
  * Simple text buffer to store potential tokens for analysis.
  * Nested methods have the following properties:
  * Add: Adds specified content (b) to the text buffer.
+ * Clear: Clears the text buffer.
  * Get: Gets the entire text buffer and returns it.
- * Clear: CLears the text buffer.
  *
  * @method textBuffer
  */
