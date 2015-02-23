@@ -70,7 +70,7 @@ function lexer() {
 		}
 		
 		// Matching newline
-		if (currentChar.match(/\n) {
+		if (currentChar.match(/\n/)) {
 			linePosition++;
 			if (inString) {
 				printOutput("Lex Error: Invalid newline detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
@@ -129,7 +129,7 @@ function lexer() {
 				inString = !inString;
 				idToken(lineNumber, linePosition, currentChar);
 				tokenized = true;
-		}
+			}
 		
 		// Matching in string, alphabetic character
 		if (currentChar.match(/[a-zA-Z]/) && inString && !tokenized) {
@@ -143,6 +143,7 @@ function lexer() {
 		}
 		
 		tokenized = false;
+		}
 	}
 }
 
