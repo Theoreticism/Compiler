@@ -19,6 +19,7 @@ function init() {
 		source = editor.getValue() + " ";
 		tokens = [];
 		clearOutput();
+		//printOutput(source);
 		printOutput("Compiling...");
 		lexer();
 	});
@@ -38,4 +39,20 @@ function clearOutput() {
  */
 function printOutput(o) {
 	$("#output").append(o + "<br />\n");
+}
+
+/**
+ * Formats string output in a manner equivalent to C/PHP's printf() function.
+ * Code taken from top non-accepted answer at http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format.
+ */
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
 }
