@@ -27,6 +27,24 @@ var token = {
 };
 
 /**
+ * Simple text buffer to store potential tokens for analysis.
+ * Nested methods have the following properties:
+ * Add: Adds specified content (b) to the text buffer.
+ * Clear: Clears the text buffer.
+ * Get: Gets the entire text buffer and returns it.
+ *
+ * @method textBuffer
+ */
+function textBuffer() {
+	var buffer = "";
+	return {
+		"add": function(b) { buffer += b; },
+		"get": function() { return buffer; },
+		"clear": function() { buffer = ""; }
+	}
+}
+
+/**
  * Handles lexing operations: parses source code and generates token list.
  * Attempts token creation after reaching whitespace or newline (or more?)
  */
@@ -151,22 +169,6 @@ function lexer() {
 		
 		tokenized = false;
 	}
-}
-
-/**
- * Simple text buffer to store potential tokens for analysis.
- * Nested methods have the following properties:
- * Add: Adds specified content (b) to the text buffer.
- * Clear: Clears the text buffer.
- * Get: Gets the entire text buffer and returns it.
- *
- * @method textBuffer
- */
-function textBuffer() {
-	var buffer = "";
-	function add(b) { buffer += b; }
-	function get() { return buffer; }
-	function clear() { buffer = ""; }
 }
 
 /**
