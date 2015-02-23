@@ -56,6 +56,7 @@ function lexer() {
 			}
 			printOutput("Warning: End of file character not found. Appending an EOF character.<br />");
 			idToken('$', lineNumber);
+			textBuffer.clear();
 		}
 		
 		// Matching whitespace
@@ -66,8 +67,8 @@ function lexer() {
 				tokenized = true;
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
-				textBuffer.clear();
 			}
+			textBuffer.clear();
 		}
 		
 		// Matching newline
@@ -77,10 +78,10 @@ function lexer() {
 				printOutput("Lex Error: Invalid newline detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
-				textBuffer.clear();
 			}
 			lineNumber++;
 			linePosition = 0; // Increment line number and reset line position on newline
+			textBuffer.clear();
 		}
 		
 		// Matching open/closing curly brace, parentheses, EOF and plus
@@ -90,10 +91,10 @@ function lexer() {
 				printOutput("Lex Error: Invalid character detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
-				textBuffer.clear();
 				idToken(lineNumber, linePosition, currentChar);
 				tokenized = true;
 			}
+			textBuffer.clear();
 		}
 		
 		// Matching assignment or boolops
@@ -104,9 +105,9 @@ function lexer() {
 				printOutput("Lex Error: Invalid character detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else {
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
-					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true
-					textBuffer.clear();
+					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
 				}
+				textBuffer.clear();
 				
 				// Matching boolop "==" or "!="
 				if (lookAhead === '=') {
@@ -129,12 +130,13 @@ function lexer() {
 			if (!inString) {
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
-					textBuffer.clear();
 				}
 				inString = !inString;
 				idToken(lineNumber, linePosition, currentChar);
 				tokenized = true;
+				textBuffer.clear();
 			}
+		}
 		
 		// Matching in string, alphabetic character
 		if (currentChar.match(/[a-zA-Z]/) && inString && !tokenized) {
@@ -148,7 +150,6 @@ function lexer() {
 		}
 		
 		tokenized = false;
-		}
 	}
 }
 
