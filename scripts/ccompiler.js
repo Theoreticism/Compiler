@@ -20,9 +20,7 @@ function init() {
 		tokens = [];
 		clearOutput();
 		printOutput("Compiling...");
-		if (lexer()) {
-			printOutput("Lex successful!");
-		}
+		lexer();
 	});
 }
 

@@ -46,6 +46,7 @@ function lexer() {
 		
 		// Handle reaching end of file (with or without EOF symbol ($))
 		if ((currentChar != '$') && (i == source.length-1) && !inString) {
+			linePosition++;
 			if (!tokenized) {
 				textBuffer.add(source[i]);
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
@@ -58,10 +59,32 @@ function lexer() {
 		
 		// Matching whitespace
 		if (currentChar.match(/\s/)) {
+			linePosition++;
 			if (inString) {
-				tokens.push({tokens.T_Space, lineNumber, linePosition, value});
+				makeToken(tokens.T_Space, lineNumber, linePosition, value);
 				tokenized = true;
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
+				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+			}
+		}
+		
+		// Matching newline
+		if (currentChar.match(/\n) {
+			linePosition++;
+			if (inString) {
+				printOutput("Lex Error: Invalid newline detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
+			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
+				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+			}
+			lineNumber++;
+			linePosition = 0; // Increment line number and reset line position on newline
+		}
+		
+		if (currentChar.match(/\{|\}|\(|\)|\$|\+/)) {
+			linePosition++;
+			if (inString) {
+				printOutput("Lex Error: Invalid character detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
+			} else if (!idToken(lineNumber, linePositino, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
 			}
 		}
@@ -106,10 +129,10 @@ function idToken(lineNumber, linePosition, value) {
 	
 	if (value.length === 1) {
 		if (value.match(/[a-z]/)) {
-			tokens.push({tokens.T_ID, lineNumber, linePosition, value});
+			makeToken(tokens.T_ID, lineNumber, linePosition, value);
 			return true;
 		} else if (value.match(/[0-9]/)) {
-			tokens.push({tokens.T_Number, lineNumber, linePosition, value});
+			makeToken(tokens.T_Number, lineNumber, linePosition, value);
 			return true;
 		}
 	}
@@ -118,48 +141,57 @@ function idToken(lineNumber, linePosition, value) {
 		case 'int':
 		case 'string':
 		case 'boolean':
-			tokens.push({tokens.T_Type, lineNumber, linePosition, value});
+			makeToken(tokens.T_Type, lineNumber, linePosition, value);
 			return true;
 		case 'print':
 		case 'while':
 		case 'if':
-			tokens.push({tokens.T_Keyword, lineNumber, linePosition, value});
+			makeToken(tokens.T_Keyword, lineNumber, linePosition, value);
 			return true;
 		case 'false':
 		case 'true':
-			tokens.push({tokens.T_Boolval, lineNumber, linePosition, value});
+			makeToken(tokens.T_Boolval, lineNumber, linePosition, value);
 			return true;
 		case '{':
-			tokens.push({tokens.T_LBrace, lineNumber, linePosition, value});
+			makeToken(tokens.T_LBrace, lineNumber, linePosition, value);
 			return true;
 		case '}':
-			tokens.push({tokens.T_RBrace, lineNumber, linePosition, value});
+			makeToken(tokens.T_RBrace, lineNumber, linePosition, value);
 			return true;
 		case '(':
-			tokens.push({tokens.T_LParen, lineNumber, linePosition, value});
+			makeToken(tokens.T_LParen, lineNumber, linePosition, value);
 			return true;
 		case ')':
-			tokens.push({tokens.T_RParen, lineNumber, linePosition, value});
+			makeToken(tokens.T_RParen, lineNumber, linePosition, value);
 			return true;
 		case '=':
-			tokens.push({tokens.T_Assign, lineNumber, linePosition, value});
+			makeToken(tokens.T_Assign, lineNumber, linePosition, value);
 			return true;
 		case '==':
 		case '!=':
-			tokens.push({tokens.T_Boolop, lineNumber, linePosition, value});
+			makeToken(tokens.T_Boolop, lineNumber, linePosition, value);
 			return true;
 		case '$':
-			tokens.push({tokens.T_EOF, lineNumber, linePosition, value});
+			makeToken(tokens.T_EOF, lineNumber, linePosition, value);
 			return true;
 		case '+':
-			tokens.push({tokens.T_Plus, lineNumber, linePosition, value});
+			makeToken(tokens.T_Plus, lineNumber, linePosition, value);
 			return true;
 		case '"':
-			tokens.push({tokens.T_Quote, lineNumber, linePosition, value});
+			makeToken(tokens.T_Quote, lineNumber, linePosition, value);
 			return true;
 		default:
 			break;
 	}
 	
 	return false;
+}
+
+function makeToken(type, lineNumber, linePosition, value) {
+	tokens.push({
+		"type": type,
+		"lineNumber": lineNumber,
+		"linePosition": linePosition,
+		"value": value
+	});
 }
