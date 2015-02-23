@@ -49,7 +49,7 @@ function lexer() {
 		if ((currentChar != '$') && (i == source.length-1) && !inString) {
 			linePosition++;
 			if (!tokenized) {
-				textBuffer.add(source[i]);
+				textBuffer.add(currentChar);
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
 				}
@@ -66,6 +66,7 @@ function lexer() {
 				tokenized = true;
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+				textBuffer.clear();
 			}
 		}
 		
@@ -76,6 +77,7 @@ function lexer() {
 				printOutput("Lex Error: Invalid newline detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+				textBuffer.clear();
 			}
 			lineNumber++;
 			linePosition = 0; // Increment line number and reset line position on newline
@@ -88,6 +90,7 @@ function lexer() {
 				printOutput("Lex Error: Invalid character detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+				textBuffer.clear();
 				idToken(lineNumber, linePosition, currentChar);
 				tokenized = true;
 			}
@@ -101,12 +104,13 @@ function lexer() {
 				printOutput("Lex Error: Invalid character detected in string at line {1} character {2}.".format(lineNumber, linePosition - textBuffer.get().length), true);
 			} else {
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
-					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true
+					textBuffer.clear();
 				}
 				
-				// Matching boolop "=="
+				// Matching boolop "==" or "!="
 				if (lookAhead === '=') {
-					idToken(lineNumber, linePosition, currentChar + '=')
+					idToken(lineNumber, linePosition, currentChar + '=');
 					i++;
 					tokenized = true;
 					linePosition++;
@@ -125,6 +129,7 @@ function lexer() {
 			if (!inString) {
 				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 					printOutput("Lex Error: Invalid token '{1}' at line {2} character {3}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length), true);
+					textBuffer.clear();
 				}
 				inString = !inString;
 				idToken(lineNumber, linePosition, currentChar);
@@ -173,8 +178,9 @@ function textBuffer() {
  */
 function idToken(lineNumber, linePosition, value) {
 	value = value.trim(); //Remove excess whitespace
-	if (value.length === 0) 
+	if (value.length === 0) {
 		return true;
+	}
 	
 	if (value.length === 1) {
 		if (value.match(/[a-z]/)) {
@@ -236,6 +242,14 @@ function idToken(lineNumber, linePosition, value) {
 	return false;
 }
 
+/**
+ * Helper function designed to create and push a meaningful token object to the token list.
+ *
+ * @param {token} type The token type, as defined by the token variable.
+ * @param {number} lineNumber Line number of the token specified.
+ * @param {number} linePosition Line position of the token specified.
+ * @param {*} value Value of the token.
+ */
 function makeToken(type, lineNumber, linePosition, value) {
 	tokens.push({
 		"type": type,
