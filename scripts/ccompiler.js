@@ -26,6 +26,7 @@ function init() {
 		} else {
 			printOutput("Lexing unsuccessful.");
 		}
+		printOutput(tokens.length);
 	});
 }
 
