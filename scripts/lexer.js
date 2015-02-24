@@ -1,17 +1,4 @@
 /**
- * Text buffer closure object to store potential lexemes/tokens
- * Was unable to make this work with just nested functions (probably impossible)
- */
-var textBuffer = (function() {
-	var buffer = "";
-	return {
-		"add": function(b) { buffer += b; },
-		"get": function() { return buffer; },
-		"clear": function() { buffer = ""; }
-	}
-})();
-
-/**
  * Representation of lexemes/tokens as an object
  */
 var token = {
@@ -36,6 +23,18 @@ var token = {
 };
 
 /**
+ * Text buffer to store potential lexemes/tokens
+ * 
+ * @this {TextBuffer}
+ */
+function TextBuffer() {
+	this.buffer = "";
+	this.add = function(b) { this.buffer += b; };
+	this.get = function() { return this.buffer; };
+	this.clear = function() { this.buffer = ""; };
+}
+
+/**
  * Handles lexing operations: parses source code and generates token list.
  * Attempts token creation after reaching whitespace or newline (or more?)
  */
@@ -44,6 +43,8 @@ function lexer() {
 	var linePosition = 0;
 	var inString = false; //check if we are in string
 	var tokenized = false; //check if we have already created a token
+	var textBuffer = new TextBuffer();
+	textBuffer.clear();
 	for (var index = 0; index < source.length; index++) {
 		var currentChar = source[index];
 		
