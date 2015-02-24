@@ -16,12 +16,16 @@ function init() {
 	editor.getSession().setMode("ace/mode/javascript");
 	
 	$("#compile").on("click", function(){
-		source = editor.getValue() + " ";
+		source = editor.getValue();
 		tokens = [];
 		clearOutput();
 		//printOutput(source);
 		printOutput("Compiling...");
-		lexer();
+		if (lexer()) {
+			printOutput("Lexing successful!");
+		} else {
+			printOutput("Lexing unsuccessful.");
+		}
 	});
 }
 
