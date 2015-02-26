@@ -1,7 +1,7 @@
 //TODO: Verbose?
 
 var source;
-var tokens;
+var tokenlist;
 var cst;
 var ast;
 var environ;
@@ -17,7 +17,7 @@ function init() {
 	
 	$("#compile").on("click", function(){
 		source = editor.getValue();
-		tokens = [];
+		tokenlist = [];
 		clearOutput();
 		//printOutput(source);
 		printOutput("Compiling...");
@@ -26,7 +26,7 @@ function init() {
 		} else {
 			printOutput("Lexing unsuccessful.");
 		}
-		printOutput(tokens.length);
+		printOutput(tokenlist.length);
 	});
 }
 

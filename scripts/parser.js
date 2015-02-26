@@ -9,8 +9,8 @@ function parser() {
 }
 
 function getNext() {
-	if (tokenIndex < tokens.length) {
-		return tokens[tokenIndex++];
+	if (tokenIndex < tokenlist.length) {
+		return tokenlist[tokenIndex++];
 	}
 }
 
@@ -24,7 +24,7 @@ function checkToken(cToken) {
 	}
 	
 	//Acquired token type
-	if (currentToken.type == cToken) { //CHECK THIS
+	if (currentToken.type == cToken) {
 		printOutput("Got a {0}".format(cToken));
 	} else {
 		//Output parse error
@@ -36,42 +36,41 @@ function checkToken(cToken) {
 }
 
 function parseProgram() {
-
+	parseBlock();
+	checkToken("T_EOF");
 }
 
 function parseBlock() {
-
+	checkToken("T_LBrace");
+	parseStatementList();
+	checkToken("T_RBrace");
 }
 
 function parseStatementList() {
-
+	if (currentToken.type == "T_Keyword" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
+		parseStatement();
+		parseStatementList();	
+	} else {
+		// Allow no action to be taken as a result; epsilon production	
+	}
 }
 
 function parseStatement() {
-	if () {
-		parsePrintStatement();
-	} else if () {
-		parseAssignmentStatement();
-	} else if () {
-		parseVarDecl();
-	} else if () {
-		parseWhileStatement();
-	} else if () {
-		parseIfStatement();
-	} else if () {
-		parseBlock();
+	switch (currentToken.type) {
+		case 'T_Keyword':
+			//TODO
+		case 'T_Type':
+			parseVarDecl();
+		case 'T_ID':
+			parseAssignmentStatement();
+		case 'T_LBrace':
+			parseBlock();
+		default:
+			break;
 	}
 }
 
 function parsePrintStatement() {
-
-}
-
-function parseAssignmentStatement() {
-
-}
-
-function parseVarDecl() {
 
 }
 
@@ -80,6 +79,14 @@ function parseWhileStatement() {
 }
 
 function parseIfStatement() {
+
+}
+
+function parseAssignmentStatement() {
+	
+}
+
+function parseVarDecl() {
 
 }
 
@@ -94,7 +101,11 @@ function parseExpr() {
 }
 
 function parseIntExpr() {
-
+	parseDigit();
+	if (currentToken == "T_Intop") {
+		parseIntop();
+		parseExpr();
+	}
 }
 
 function parseStringExpr() {
@@ -106,37 +117,45 @@ function parseBooleanExpr() {
 }
 
 function parseId() {
-
+	checkToken("T_ID");
 }
 
 function parseCharList() {
-
+	if (currentToken.type == "T_Char") {
+		parseChar();
+		parseCharList();
+	} else if (currentToken.type == "T_Space") {
+		parseSpace();
+		parseCharList();	
+	} else {
+		// Allow no action as a result; epsilon production	
+	}
 }
 
 function parseType() {
-
+	checkToken("T_Type");
 }
 
 function parseChar() {
-
+	checkToken("T_Char");
 }
 
 function parseSpace() {
-
+	checkToken("T_Space");
 }
 
 function parseDigit() {
-
+	checkToken("T_Digit");
 }
 
 function parseBoolop() {
-
+	checkToken("T_Boolop");
 }
 
 function parseBoolval() {
-
+	checkToken("T_Boolval");
 }
 
-function parsePlus() {
-
+function parseIntop() {
+	checkToken("T_Intop");
 }

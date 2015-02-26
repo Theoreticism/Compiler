@@ -1,7 +1,7 @@
 /**
- * Representation of lexemes/tokens as an object
+ * Representation of lexemes/tokens as an object.
  */
-var token = {
+var tokens = {
 
 	T_LBrace: "T_LBrace",   // {
 	T_RBrace: "T_RBrace",   // }
@@ -16,14 +16,14 @@ var token = {
 	T_Keyword: "T_Keyword", // print, while, if
 	T_Type: "T_Type",       // int, string, boolean
 	T_ID: "T_ID",           // [a-Z]
-	T_Number: "T_Number",   // [0-9]
+	T_Digit: "T_Digit",   // [0-9]
 	T_Space: "T_Space",     // \s (whitespace metacharacter)
 	T_Char: "T_Char"        // a-Z
 
 };
 
 /**
- * Text buffer to store potential lexemes/tokens
+ * Text buffer to store potential lexemes/tokens.
  * 
  * @this {TextBuffer}
  */
@@ -95,7 +95,7 @@ function lexer() {
 			textBuffer.clear();
 		}
 		
-		// Matching open/closing curly brace, parentheses, EOF and plus
+		// Matching open/closing curly brace, parentheses, EOF and intop
 		if (currentChar.match(/\{|\}|\(|\)|\$|\+/)) {
 			if (inString) {
 				printOutput("Lex Error: Invalid character detected in string at line {0} character {1}.".format(lineNumber, index - linePosition));
@@ -186,7 +186,7 @@ function idToken(lineNumber, linePosition, value) {
 			makeToken(tokens.T_ID, lineNumber, linePosition, value);
 			return true;
 		} else if (value.match(/[0-9]/)) {
-			makeToken(tokens.T_Number, lineNumber, linePosition, value);
+			makeToken(tokens.T_Digit, lineNumber, linePosition, value);
 			return true;
 		}
 	}
@@ -242,7 +242,7 @@ function idToken(lineNumber, linePosition, value) {
 }
 
 /**
- * Helper function designed to create and push a meaningful token object to the token list.
+ * Helper function designed to create and push a token object to the token list.
  *
  * @param {token} type The token type, as defined by the token variable.
  * @param {number} lineNumber Line number of the token specified.
@@ -250,10 +250,6 @@ function idToken(lineNumber, linePosition, value) {
  * @param {*} value Value of the token.
  */
 function makeToken(type, lineNumber, linePosition, value) {
-	tokens.push({
-		"type": type,
-		"lineNumber": lineNumber,
-		"linePosition": linePosition,
-		"value": value
-	});
+	var token = new Token(type, lineNumber, linePosition, value);
+	tokenlist.push(token);
 }
