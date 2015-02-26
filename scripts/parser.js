@@ -1,5 +1,18 @@
-function parser() {
-	
+var currentToken;
+var tokenIndex;
+
+function getNextToken() {
+	if (tokenIndex < tokens.length) {
+		return tokens[tokenIndex++];
+	}
+}
+
+function checkToken(cToken) {
+	if (cToken != "T_RBrace") {
+		printOutput("Expecting a {0}".format(cToken));
+	} else {
+		printOutput("Expecting a {0} or a statement".format(cToken));
+	}
 }
 
 function parseProgram() {
