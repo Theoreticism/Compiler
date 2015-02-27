@@ -49,7 +49,23 @@ h1 {
 	left: 100px;
 	bottom: 0px;
 	background-color: #FFFFFF;
-	width: 500px;
+	width: 240px;
+	height: 23px;
+	text-align: center;
+	float: left;
+	padding-top: 5px;
+	border: 1px solid black;
+	cursor: pointer;
+}
+
+#verbose {
+	color: black;
+	position: absolute;
+	height: 30px;
+	left: 360px;
+	bottom: 0px;
+	background-color: #FFFFFF;
+	width: 240px;
 	height: 23px;
 	text-align: center;
 	float: left;

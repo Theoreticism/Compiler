@@ -1,5 +1,4 @@
-//TODO: Verbose?
-
+var verbose = true;
 var source;
 var tokenlist;
 var cst;
@@ -19,15 +18,25 @@ function init() {
 		source = editor.getValue();
 		tokenlist = [];
 		clearOutput();
-		//printOutput(source);
-		printOutput("Compiling...");
+		printOutput("Beginning compilation process.");
+		printOutput("Lexing...");
 		if (lexer()) {
 			printOutput("Lexing successful!");
+			printOutput("Parsing...");
+			parser();
 		} else {
 			printOutput("Lexing unsuccessful.");
 		}
-		printOutput(tokenlist.length);
-		parser();
+	});
+	
+	$("#verbose").on("click", function(){
+		if (!verbose) {
+			$("#verbose").text("Verbose On");
+			verbose = true;
+		} else {
+			$("#verbose").text("Verbose Off");
+			verbose = false;
+		}
 	});
 }
 
@@ -45,6 +54,16 @@ function clearOutput() {
  */
 function printOutput(o) {
 	$("#output").append(o + "<br />\n");
+}
+
+/**
+ * Prints verbose text output to output screen.
+ *
+ * @param {string} v Verbose text output.
+ */
+function printVerbose(v) {
+	if (verbose)
+		$("#output").append(v + "<br />\n");
 }
 
 /**

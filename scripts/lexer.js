@@ -39,6 +39,8 @@ function TextBuffer() {
 /**
  * Handles lexing operations: parses source code and generates token list.
  * Attempts token creation after reaching whitespace or newline (or more?)
+ *
+ * @return {boolean} True of lexing process was successful, false otherwise
  */
 function lexer() {
 	var index;
@@ -53,6 +55,7 @@ function lexer() {
 		
 		// Input after end of file ignored
 		if ((currentChar.match(/\$/)) && (index < source.length - 1)) {
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_EOF, currentChar));
 			printOutput("Warning: Input found after EOF ignored.");
 			return true;
 		}
@@ -75,6 +78,7 @@ function lexer() {
 		if (currentChar.match(/\s/)) {
 			if (inString) {
 				makeToken(tokens.T_Space, lineNumber, linePosition, currentChar);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Space, currentChar));
 				tokenized = true;
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(textBuffer.get(), lineNumber, index - linePosition));
@@ -102,9 +106,10 @@ function lexer() {
 			if (inString) {
 				printOutput("Lex Error: Invalid character detected in string at line {0} character {1}.".format(lineNumber, index - linePosition));
 				return;
-			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
-				printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(textBuffer.get(), lineNumber, index - linePosition));
-				return;
+			} else {
+				if (!idToken(lineNumber, linePosition, textBuffer.get())) {
+					printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(textBuffer.get(), lineNumber, index - linePosition))
+				}
 				idToken(lineNumber, linePosition, currentChar);
 				tokenized = true;
 			}
@@ -156,6 +161,7 @@ function lexer() {
 		// Matching in string, alphabetic character
 		if (currentChar.match(/[a-zA-Z]/) && inString && !tokenized) {
 			makeToken(tokens.T_Char, lineNumber, linePosition, currentChar);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Char, currentChar));
 			tokenized = true;
 		}
 		
@@ -186,9 +192,11 @@ function idToken(lineNumber, linePosition, value) {
 	if (value.length === 1) {
 		if (value.match(/[a-z]/)) {
 			makeToken(tokens.T_ID, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_ID, value));
 			return true;
 		} else if (value.match(/[0-9]/)) {
 			makeToken(tokens.T_Digit, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Digit, value));
 			return true;
 		}
 	}
@@ -196,49 +204,63 @@ function idToken(lineNumber, linePosition, value) {
 	switch (value) {
 		case 'print':
 			makeToken(tokens.T_Print, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Print, value));
 			return true;
 		case 'while':
 			makeToken(tokens.T_While, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_While, value));
 			return true;
 		case 'if':
 			makeToken(tokens.T_If, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_If, value));
 			return true;
 		case 'int':
 		case 'string':
 		case 'boolean':
 			makeToken(tokens.T_Type, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Type, value));
 			return true;
 		case 'false':
 		case 'true':
 			makeToken(tokens.T_Boolval, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Boolval, value));
 			return true;
 		case '{':
 			makeToken(tokens.T_LBrace, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_LBrace, value));
 			return true;
 		case '}':
 			makeToken(tokens.T_RBrace, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_RBrace, value));
 			return true;
 		case '(':
 			makeToken(tokens.T_LParen, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_LParen, value));
 			return true;
 		case ')':
 			makeToken(tokens.T_RParen, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_RParen, value));
 			return true;
 		case '=':
 			makeToken(tokens.T_Assign, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Assign, value));
 			return true;
 		case '==':
 		case '!=':
 			makeToken(tokens.T_Boolop, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Boolop, value));
 			return true;
 		case '$':
 			makeToken(tokens.T_EOF, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_EOF, value));
 			return true;
 		case '+':
 			makeToken(tokens.T_Intop, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Intop, value));
 			return true;
 		case '"':
 			makeToken(tokens.T_Quote, lineNumber, linePosition, value);
+			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Quote, value));
 			return true;
 		default:
 			break;
