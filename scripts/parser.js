@@ -3,7 +3,7 @@ var tokenIndex;
 
 function parser() {
 	tokenIndex = 0;
-	currentToken = getNextToken();
+	currentToken = getNext();
 	parseProgram();
 	//TODO: CST stuff
 }
@@ -104,12 +104,17 @@ function parseVarDecl() {
 }
 
 function parseExpr() {
-	if () {
-		parseIntExpr();
-	} else if () {
-		parseStringExpr();
-	} else if () {
-		parseBooleanExpr();
+	switch (currentToken.type) {
+		case 'T_Digit':
+			parseIntExpr();
+		case 'T_Quote':
+			parseStringExpr();
+		case 'T_LParen':
+			parseBooleanExpr();
+		case 'T_Boolval':
+			parseBooleanExpr();
+		default:
+			break;
 	}
 }
 
@@ -128,13 +133,13 @@ function parseStringExpr() {
 }
 
 function parseBooleanExpr() {
-	if (currentToken.type == "T_LParen");
+	if (currentToken.type == "T_LParen") {
 		checkToken("T_LParen");
 		parseExpr();
 		parseBoolop();
 		parseExpr();
 		checkToken("T_RParen");
-	else if (currentToken.type == "T_Boolval") {
+	} else if (currentToken.type == "T_Boolval") {
 		parseBoolval();
 	}
 }
@@ -149,9 +154,9 @@ function parseCharList() {
 		parseCharList();
 	} else if (currentToken.type == "T_Space") {
 		parseSpace();
-		parseCharList();	
+		parseCharList();
 	} else {
-		// Allow no action as a result; epsilon production	
+		// Allow no action as a result; epsilon production
 	}
 }
 
