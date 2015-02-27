@@ -22,14 +22,14 @@ function init() {
 		printOutput("Lexing...");
 		
 		if (lexer()) {
-			printOutput("Lexing successful!");
+			printOutput("Lex successful!");
 			printOutput("Parsing...");
 			if (parser()) {
-				printOutput("Parsing successful!");
+				printOutput("Parse successful!");
 			} else
-				printOutput("Parsing unsuccessful.");
+				printOutput("Parse unsuccessful.");
 		} else
-			printOutput("Lexing unsuccessful.");
+			printOutput("Lex unsuccessful.");
 	});
 	
 	$("#verbose").on("click", function(){

@@ -34,19 +34,19 @@ function checkToken(cToken) {
 	if (!alarm) {
 		//Expected token type
 		if (cToken != "T_RBrace") {
-			printOutput("Expecting a {0}".format(cToken));
+			printVerbose("Expecting a {0}".format(cToken));
 		} else {
-			printOutput("Expecting a {0} or a statement".format(cToken));
+			printVerbose("Expecting a {0} or a statement".format(cToken));
 		}
 		
 		//Acquired token type
 		if (currentToken.type == cToken) {
-			printOutput("Got a {0}!".format(cToken));
+			printVerbose("Got a {0}!".format(cToken));
 		} else {
 			if (cToken != "T_RBrace") {
-				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format(cToken, currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format(cToken, currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			} else {
-				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			}
 			alarm = true;
 			success = false;
@@ -211,7 +211,7 @@ function parseExpr() {
 				parseId();
 				break;
 			default:
-				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 				alarm = true;
 				success = false;
 				break;

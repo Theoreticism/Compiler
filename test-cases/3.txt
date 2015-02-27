@@ -1,0 +1,217 @@
+Test Case 3
+
+Code:
+
+{
+	int i
+	i = 1
+	while((i == 8) == false) {
+		if(i == 1) {
+			print("begin ")
+		}
+		print("loop ")
+		print(i)
+		print(" ")
+		i = 1 + i
+	}
+} $
+
+Output:
+
+Beginning compilation process.
+Lexing...
+Identified token: T_LBrace from '{'
+Identified token: T_Type from 'int'
+Identified token: T_ID from 'i'
+Identified token: T_ID from 'i'
+Identified token: T_Assign from '='
+Identified token: T_Digit from '1'
+Identified token: T_While from 'while'
+Identified token: T_LParen from '('
+Identified token: T_LParen from '('
+Identified token: T_ID from 'i'
+Identified token: T_Boolop from '=='
+Identified token: T_Digit from '8'
+Identified token: T_RParen from ')'
+Identified token: T_Boolop from '=='
+Identified token: T_Boolval from 'false'
+Identified token: T_RParen from ')'
+Identified token: T_LBrace from '{'
+Identified token: T_If from 'if'
+Identified token: T_LParen from '('
+Identified token: T_ID from 'i'
+Identified token: T_Boolop from '=='
+Identified token: T_Digit from '1'
+Identified token: T_RParen from ')'
+Identified token: T_LBrace from '{'
+Identified token: T_Print from 'print'
+Identified token: T_LParen from '('
+Identified token: T_Quote from '"'
+Identified token: T_Char from 'b'
+Identified token: T_Char from 'e'
+Identified token: T_Char from 'g'
+Identified token: T_Char from 'i'
+Identified token: T_Char from 'n'
+Identified token: T_Space from ' '
+Identified token: T_Quote from '"'
+Identified token: T_RParen from ')'
+Identified token: T_RBrace from '}'
+Identified token: T_Print from 'print'
+Identified token: T_LParen from '('
+Identified token: T_Quote from '"'
+Identified token: T_Char from 'l'
+Identified token: T_Char from 'o'
+Identified token: T_Char from 'o'
+Identified token: T_Char from 'p'
+Identified token: T_Space from ' '
+Identified token: T_Quote from '"'
+Identified token: T_RParen from ')'
+Identified token: T_Print from 'print'
+Identified token: T_LParen from '('
+Identified token: T_ID from 'i'
+Identified token: T_RParen from ')'
+Identified token: T_Print from 'print'
+Identified token: T_LParen from '('
+Identified token: T_Quote from '"'
+Identified token: T_Space from ' '
+Identified token: T_Quote from '"'
+Identified token: T_RParen from ')'
+Identified token: T_ID from 'i'
+Identified token: T_Assign from '='
+Identified token: T_Digit from '1'
+Identified token: T_Intop from '+'
+Identified token: T_ID from 'i'
+Identified token: T_RBrace from '}'
+Identified token: T_RBrace from '}'
+Identified token: T_EOF from '$'
+Lexing successful!
+Parsing...
+Expecting a T_LBrace
+Got a T_LBrace!
+Expecting a T_Type
+Got a T_Type!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Assign
+Got a T_Assign!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_While
+Got a T_While!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Boolval
+Got a T_Boolval!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_LBrace
+Got a T_LBrace!
+Expecting a T_If
+Got a T_If!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_LBrace
+Got a T_LBrace!
+Expecting a T_Print
+Got a T_Print!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Space
+Got a T_Space!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_RBrace or a statement
+Got a T_RBrace!
+Expecting a T_Print
+Got a T_Print!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Space
+Got a T_Space!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Print
+Got a T_Print!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Print
+Got a T_Print!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_Space
+Got a T_Space!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Assign
+Got a T_Assign!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_Intop
+Got a T_Intop!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_RBrace or a statement
+Got a T_RBrace!
+Expecting a T_RBrace or a statement
+Got a T_RBrace!
+Expecting a T_EOF
+Got a T_EOF!
+Parsing successful!

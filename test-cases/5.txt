@@ -1,0 +1,152 @@
+Test Case 5
+
+Code:
+
+{
+    boolean a
+    a = ((true == false) == ((1 == 2) == true))
+    
+    if(a == ((5 == 5) == true)) {
+        print("boolean hell complete")
+    }
+}$
+
+Output:
+
+Beginning compilation process.
+Lexing...
+Lexing successful!
+Parsing...
+Expecting a T_LBrace
+Got a T_LBrace!
+Expecting a T_Type
+Got a T_Type!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Assign
+Got a T_Assign!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Boolval
+Got a T_Boolval!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Boolval
+Got a T_Boolval!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Boolval
+Got a T_Boolval!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_If
+Got a T_If!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_ID
+Got a T_ID!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Digit
+Got a T_Digit!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_Boolop
+Got a T_Boolop!
+Expecting a T_Boolval
+Got a T_Boolval!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_LBrace
+Got a T_LBrace!
+Expecting a T_Print
+Got a T_Print!
+Expecting a T_LParen
+Got a T_LParen!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Space
+Got a T_Space!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Space
+Got a T_Space!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Char
+Got a T_Char!
+Expecting a T_Quote
+Got a T_Quote!
+Expecting a T_RParen
+Got a T_RParen!
+Expecting a T_RBrace or a statement
+Got a T_RBrace!
+Expecting a T_RBrace or a statement
+Got a T_RBrace!
+Expecting a T_EOF
+Got a T_EOF!
+Parsing successful!
