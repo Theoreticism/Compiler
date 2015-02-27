@@ -15,7 +15,6 @@ function getNext() {
 }
 
 function checkToken(cToken) {
-
 	//Expected token type
 	if (cToken != "T_RBrace") {
 		printOutput("Expecting a {0}".format(cToken));
@@ -47,7 +46,7 @@ function parseBlock() {
 }
 
 function parseStatementList() {
-	if (currentToken.type == "T_Keyword" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
+	if (currentToken.type == "T_Print" | currentToken.type == "T_While" | currentToken.type == "T_If" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
 		parseStatement();
 		parseStatementList();	
 	} else {
@@ -57,8 +56,12 @@ function parseStatementList() {
 
 function parseStatement() {
 	switch (currentToken.type) {
-		case 'T_Keyword':
-			//TODO
+		case 'T_Print':
+			parsePrintStatement();
+		case 'T_While':
+			parseWhileStatement();
+		case 'T_If':
+			parseIfStatement();
 		case 'T_Type':
 			parseVarDecl();
 		case 'T_ID':
@@ -71,23 +74,33 @@ function parseStatement() {
 }
 
 function parsePrintStatement() {
-
+	checkToken("T_Print");
+	checkToken("T_LParen");
+	parseExpr();
+	checkToken("T_RParen");
 }
 
 function parseWhileStatement() {
-
+	checkToken("T_While");
+	parseBooleanExpr();
+	parseBlock();
 }
 
 function parseIfStatement() {
-
+	checkToken("T_If");
+	parseBooleanExpr();
+	parseBlock();
 }
 
 function parseAssignmentStatement() {
-	
+	parseId();
+	checkToken("T_Assign");
+	parseExpr();
 }
 
 function parseVarDecl() {
-
+	parseType();
+	parseId();
 }
 
 function parseExpr() {
@@ -109,11 +122,21 @@ function parseIntExpr() {
 }
 
 function parseStringExpr() {
-
+	checkToken("T_Quote");
+	parseCharList();
+	checkToken("T_Quote");
 }
 
 function parseBooleanExpr() {
-
+	if (currentToken.type == "T_LParen");
+		checkToken("T_LParen");
+		parseExpr();
+		parseBoolop();
+		parseExpr();
+		checkToken("T_RParen");
+	else if (currentToken.type == "T_Boolval") {
+		parseBoolval();
+	}
 }
 
 function parseId() {

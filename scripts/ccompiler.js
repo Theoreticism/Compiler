@@ -27,6 +27,7 @@ function init() {
 			printOutput("Lexing unsuccessful.");
 		}
 		printOutput(tokenlist.length);
+		parser();
 	});
 }
 

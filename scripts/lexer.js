@@ -13,10 +13,12 @@ var tokens = {
 	T_Intop: "T_Intop",     // +
 	T_Quote: "T_Quote",     // "
 	T_Boolval: "T_Boolval", // true, false
-	T_Keyword: "T_Keyword", // print, while, if
+	T_Print: "T_Print",     // print
+	T_While: "T_While",     // while
+	T_If: "T_If",           // if
 	T_Type: "T_Type",       // int, string, boolean
 	T_ID: "T_ID",           // [a-Z]
-	T_Digit: "T_Digit",   // [0-9]
+	T_Digit: "T_Digit",     // [0-9]
 	T_Space: "T_Space",     // \s (whitespace metacharacter)
 	T_Char: "T_Char"        // a-Z
 
@@ -193,9 +195,13 @@ function idToken(lineNumber, linePosition, value) {
 	
 	switch (value) {
 		case 'print':
+			makeToken(tokens.T_Print, lineNumber, linePosition, value);
+			return true;
 		case 'while':
+			makeToken(tokens.T_While, lineNumber, linePosition, value);
+			return true;
 		case 'if':
-			makeToken(tokens.T_Keyword, lineNumber, linePosition, value);
+			makeToken(tokens.T_If, lineNumber, linePosition, value);
 			return true;
 		case 'int':
 		case 'string':
