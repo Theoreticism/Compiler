@@ -1,7 +1,6 @@
 var currentToken;
 var tokenIndex;
 var alarm;
-var success = false;
 
 /**
  * Base parser function. Handles recursion start and CST generation.
@@ -13,7 +12,7 @@ function parser() {
 	currentToken = getNext();
 	parseProgram();
 	//TODO: CST stuff
-	return success;
+	return !alarm;
 }
 
 /**
@@ -49,7 +48,6 @@ function checkToken(cToken) {
 				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			}
 			alarm = true;
-			success = false;
 		}
 		
 		if (currentToken.type != "T_EOF") {
@@ -213,7 +211,6 @@ function parseExpr() {
 			default:
 				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 				alarm = true;
-				success = false;
 				break;
 		}
 	}
