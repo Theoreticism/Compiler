@@ -11,7 +11,7 @@ function parser() {
 	tokenIndex = 0;
 	alarm = false;
 	currentToken = getNext();
-	success = parseProgram();
+	parseProgram();
 	//TODO: CST stuff
 	return success;
 }
@@ -49,6 +49,7 @@ function checkToken(cToken) {
 				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			}
 			alarm = true;
+			success = false;
 		}
 		
 		if (currentToken.type != "T_EOF") {
@@ -65,7 +66,7 @@ function parseProgram() {
 	if (!alarm) {
 		parseBlock();
 		checkToken("T_EOF");
-		return true;
+		success = true;
 	}
 }
 
@@ -212,6 +213,7 @@ function parseExpr() {
 			default:
 				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 				alarm = true;
+				success = false;
 				break;
 		}
 	}
@@ -224,7 +226,7 @@ function parseExpr() {
 function parseIntExpr() {
 	if (!alarm) {
 		parseDigit();
-		if (currentToken == "T_Intop") {
+		if (currentToken.type == "T_Intop") {
 			parseIntop();
 			parseExpr();
 		}
