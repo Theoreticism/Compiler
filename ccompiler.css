@@ -2,7 +2,7 @@
 
 body {
 	background-color: #FFFFFF;
-	font-family:Verdana;
+	font-family:Monospace;
 }
 
 h1 {
@@ -38,6 +38,7 @@ h1 {
 	right: 100px;
 	bottom: 0px;
 	overflow-y: scroll;
+	font-size: 12pt;
 	padding: 5px;
 	word-break: break-all;
 }
@@ -52,6 +53,7 @@ h1 {
 	width: 240px;
 	height: 23px;
 	text-align: center;
+	font-size: 12pt;
 	float: left;
 	padding-top: 5px;
 	border: 1px solid black;
@@ -68,6 +70,7 @@ h1 {
 	width: 240px;
 	height: 23px;
 	text-align: center;
+	font-size: 12pt;
 	float: left;
 	padding-top: 5px;
 	border: 1px solid black;

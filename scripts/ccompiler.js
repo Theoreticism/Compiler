@@ -20,13 +20,16 @@ function init() {
 		clearOutput();
 		printOutput("Beginning compilation process.");
 		printOutput("Lexing...");
+		
 		if (lexer()) {
 			printOutput("Lexing successful!");
 			printOutput("Parsing...");
-			parser();
-		} else {
+			if (parser()) {
+				printOutput("Parsing successful!");
+			} else
+				printOutput("Parsing unsuccessful.");
+		} else
 			printOutput("Lexing unsuccessful.");
-		}
 	});
 	
 	$("#verbose").on("click", function(){

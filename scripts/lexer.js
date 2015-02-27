@@ -53,13 +53,6 @@ function lexer() {
 	for (index = 0; index < source.length; index++) {
 		var currentChar = source[index];
 		
-		// Input after end of file ignored
-		if ((currentChar.match(/\$/)) && (index < source.length - 1)) {
-			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_EOF, currentChar));
-			printOutput("Warning: Input found after EOF ignored.");
-			return true;
-		}
-		
 		// Handle reaching end of file (with or without EOF symbol ($))
 		if ((currentChar != '$') && (index == source.length - 1) && !inString) {
 			if (!tokenized) {
@@ -163,6 +156,12 @@ function lexer() {
 			makeToken(tokens.T_Char, lineNumber, linePosition, currentChar);
 			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Char, currentChar));
 			tokenized = true;
+		}
+		
+		// Input after end of file ignored
+		if ((currentChar.match(/\$/)) && (index < source.length - 1)) {
+			printOutput("Warning: Input found after EOF ignored.");
+			return true;
 		}
 		
 		// If no token is recognized and none has been created, advance buffer
