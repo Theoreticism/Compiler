@@ -24,6 +24,8 @@ var tokens = {
 
 };
 
+var textBuffer = new TextBuffer();
+
 /**
  * Text buffer to store potential lexemes/tokens.
  * 
@@ -48,7 +50,6 @@ function lexer() {
 	var linePosition = 1;
 	var inString = false; //check if we are in string
 	var tokenized = false; //check if we have already created a token
-	var textBuffer = new TextBuffer();
 	textBuffer.clear();
 	for (index = 0; index < source.length; index++) {
 		var currentChar = source[index];
@@ -152,8 +153,14 @@ function lexer() {
 			textBuffer.clear();
 		}
 		
-		// Matching in string, alphabetic character
-		if (currentChar.match(/[a-zA-Z]/) && inString && !tokenized) {
+		// Matching in string, uppercase alphabetic character or digit (not allowed!)
+		if (currentChar.match(/[0-9A-Z]/) && inString && !tokenized) {
+			printOutput("Lex Error: Invalid uppercase alphanumeric character detected in string at line {0} character {1}.".format(lineNumber, linePosition - textBuffer.get().length));
+			return;
+		}
+		
+		// Matching in string, lowercase alphabetic character
+		if (currentChar.match(/[a-z]/) && inString && !tokenized) {
 			makeToken(tokens.T_Char, lineNumber, linePosition, currentChar);
 			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Char, currentChar));
 			tokenized = true;
@@ -186,20 +193,9 @@ function lexer() {
  */
 function idToken(lineNumber, linePosition, value) {
 	value = value.trim(); //Remove excess whitespace
+	indiv = value.split(""); //Split into single characters for if no keywords match
 	if (value.length === 0) {
 		return true;
-	}
-	
-	if (value.length === 1) {
-		if (value.match(/[a-z]/)) {
-			makeToken(tokens.T_ID, lineNumber, linePosition, value);
-			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_ID, value));
-			return true;
-		} else if (value.match(/[0-9]/)) {
-			makeToken(tokens.T_Digit, lineNumber, linePosition, value);
-			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Digit, value));
-			return true;
-		}
 	}
 	
 	switch (value) {
@@ -265,6 +261,22 @@ function idToken(lineNumber, linePosition, value) {
 			return true;
 		default:
 			break;
+	}
+	
+	if (indiv.length > 0) {
+		for (var i = 0; i < indiv.length; i++) {
+			if (indiv[i].match(/[a-z]/)) {
+				makeToken(tokens.T_ID, lineNumber, linePosition, indiv[i]);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_ID, indiv[i]));
+			} else if (indiv[i].match(/[0-9]/)) {
+				makeToken(tokens.T_Digit, lineNumber, linePosition, indiv[i]);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Digit, indiv[i]));
+			} else {
+				printOutput("Lex Error: Invalid character detected at line {0} character {1}.".format(lineNumber, linePosition - textBuffer.get().length + i));
+				return;
+			}
+		}
+		return true;
 	}
 	
 	return false;
