@@ -198,6 +198,7 @@ function idToken(lineNumber, linePosition, value) {
 		return true;
 	}
 	
+	// Space, newline or other line-ending character delimited
 	switch (value) {
 		case 'print':
 			makeToken(tokens.T_Print, lineNumber, linePosition, value);
@@ -263,9 +264,42 @@ function idToken(lineNumber, linePosition, value) {
 			break;
 	}
 	
+	// No spaces, newlines or other line-ending characters
 	if (indiv.length > 0) {
 		for (var i = 0; i < indiv.length; i++) {
-			if (indiv[i].match(/[a-z]/)) {
+			if (value.substr(i, 7) === "boolean") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 7));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Type, value.substr(i, 7)));
+				i += 6;
+			} else if (value.substr(i, 6) === "string") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 6));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Type, value.substr(i, 6)));
+				i += 5;
+			} else if (value.substr(i, 3) === "int") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 3));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Type, value.substr(i, 3)));
+				i += 2;
+			} else if (value.substr(i, 2) === "if") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 2));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_If, value.substr(i, 2)));
+				i++;
+			} else if (value.substr(i, 5) === "print") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 5));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Print, value.substr(i, 5)));
+				i += 4;
+			} else if (value.substr(i, 5) === "while") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 5));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_While, value.substr(i, 5)));
+				i += 4;
+			} else if (value.substr(i, 4) === "true") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 4));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Boolval, value.substr(i, 4)));
+				i += 3;
+			} else if (value.substr(i, 5) === "false") {
+				makeToken(tokens.T_Type, lineNumber, linePosition, value.substr(i, 5));
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Boolval, value.substr(i, 5)));
+				i += 4;
+			} else if (indiv[i].match(/[a-z]/)) {
 				makeToken(tokens.T_ID, lineNumber, linePosition, indiv[i]);
 				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_ID, indiv[i]));
 			} else if (indiv[i].match(/[0-9]/)) {
