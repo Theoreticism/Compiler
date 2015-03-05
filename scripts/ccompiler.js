@@ -15,7 +15,7 @@ function init() {
 	editor.getSession().setMode("ace/mode/javascript");
 	
 	$("#compile").on("click", function(){
-		source = editor.getValue() + " ";
+		source = editor.getValue();
 		tokenlist = [];
 		clearOutput();
 		printOutput("Beginning compilation process.");
