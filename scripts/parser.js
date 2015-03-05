@@ -1,6 +1,6 @@
 var currentToken;
 var tokenIndex;
-var alarm;
+var panic;
 
 /**
  * Base parser function. Handles recursion start and CST generation.
@@ -8,11 +8,11 @@ var alarm;
  */
 function parser() {
 	tokenIndex = 0;
-	alarm = false;
+	panic = false;
 	currentToken = getNext();
 	parseProgram();
 	//TODO: CST stuff
-	return !alarm;
+	return !panic;
 }
 
 /**
@@ -30,7 +30,7 @@ function getNext() {
  * Processes each token for the purposes of printing parsing process to the output box.
  */
 function checkToken(cToken) {
-	if (!alarm) {
+	if (!panic) {
 		//Expected token type
 		if (cToken != "T_RBrace") {
 			printVerbose("Expecting a {0}".format(cToken));
@@ -47,7 +47,7 @@ function checkToken(cToken) {
 			} else {
 				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			}
-			alarm = true;
+			panic = true;
 		}
 		
 		if (currentToken.type != "T_EOF") {
@@ -61,7 +61,7 @@ function checkToken(cToken) {
  * Recursive path: parseBlock next.
  */
 function parseProgram() {
-	if (!alarm) {
+	if (!panic) {
 		parseBlock();
 		checkToken("T_EOF");
 		success = true;
@@ -73,7 +73,7 @@ function parseProgram() {
  * Recursive path: parseStatementList next.
  */
 function parseBlock() {
-	if (!alarm) {
+	if (!panic) {
 		checkToken("T_LBrace");
 		parseStatementList();
 		checkToken("T_RBrace");
@@ -85,7 +85,7 @@ function parseBlock() {
  * Recursive path: parseStatement then parseStatementList next, or epsilon.
  */
 function parseStatementList() {
-	if (!alarm) {
+	if (!panic) {
 		if (currentToken.type == "T_Print" | currentToken.type == "T_While" | currentToken.type == "T_If" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
 			parseStatement();
 			parseStatementList();
@@ -100,7 +100,7 @@ function parseStatementList() {
  * Recursive path: parsePrint, parseWhile, parseIf, parseType, parseVarDecl, parseAssignment, or parseBlock next.
  */
 function parseStatement() {
-	if (!alarm) {
+	if (!panic) {
 		switch (currentToken.type) {
 			case 'T_Print':
 				parsePrintStatement();
@@ -131,7 +131,7 @@ function parseStatement() {
  * Recursive path: parseExpr next.
  */
 function parsePrintStatement() {
-	if (!alarm) {
+	if (!panic) {
 		checkToken("T_Print");
 		checkToken("T_LParen");
 		parseExpr();
@@ -144,7 +144,7 @@ function parsePrintStatement() {
  * Recursive path: parseBooleanExpr then parseBlock next.
  */
 function parseWhileStatement() {
-	if (!alarm) {
+	if (!panic) {
 		checkToken("T_While");
 		parseBooleanExpr();
 		parseBlock();
@@ -156,7 +156,7 @@ function parseWhileStatement() {
  * Recursive path: parseBooleanExpr then parseBlock next.
  */
 function parseIfStatement() {
-	if (!alarm) {
+	if (!panic) {
 		checkToken("T_If");
 		parseBooleanExpr();
 		parseBlock();
@@ -168,7 +168,7 @@ function parseIfStatement() {
  * Recursive path: parseId then parseExpr next.
  */
 function parseAssignmentStatement() {
-	if (!alarm) {
+	if (!panic) {
 		parseId();
 		checkToken("T_Assign");
 		parseExpr();
@@ -180,7 +180,7 @@ function parseAssignmentStatement() {
  * Recursive path: parseType then parseId next.
  */
 function parseVarDecl() {
-	if (!alarm) {
+	if (!panic) {
 		parseType();
 		parseId();
 	}
@@ -191,7 +191,7 @@ function parseVarDecl() {
  * Recursive path: parseInt, parseString, parseBoolean, or parseId next. If none, throw parse error.
  */
 function parseExpr() {
-	if (!alarm) {
+	if (!panic) {
 		switch (currentToken.type) {
 			case 'T_Digit':
 				parseIntExpr();
@@ -210,7 +210,7 @@ function parseExpr() {
 				break;
 			default:
 				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
-				alarm = true;
+				panic = true;
 				break;
 		}
 	}
@@ -221,7 +221,7 @@ function parseExpr() {
  * Recursive path: parseDigit next. If intop token detected, parseIntop then parseExpr next.
  */
 function parseIntExpr() {
-	if (!alarm) {
+	if (!panic) {
 		parseDigit();
 		if (currentToken.type == "T_Intop") {
 			parseIntop();
@@ -235,7 +235,7 @@ function parseIntExpr() {
  * Recursive path: parseCharList next.
  */
 function parseStringExpr() {
-	if (!alarm) {
+	if (!panic) {
 		checkToken("T_Quote");
 		parseCharList();
 		checkToken("T_Quote");
@@ -247,7 +247,7 @@ function parseStringExpr() {
  * Recursive path: If lparen token detected, parseExpr, parseBoolop then parseExpr next. If boolval token detected, parseBoolval next.
  */
 function parseBooleanExpr() {
-	if (!alarm) {
+	if (!panic) {
 		if (currentToken.type == "T_LParen") {
 			checkToken("T_LParen");
 			parseExpr();
@@ -265,7 +265,7 @@ function parseBooleanExpr() {
  * Recursive path: Path end, check ID token.
  */
 function parseId() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_ID");
 }
 
@@ -274,7 +274,7 @@ function parseId() {
  * Recursive path: If char token detected, parseChar then parseCharList next. If space token detected, parseSpace then parseCharList next, or epsilon.
  */
 function parseCharList() {
-	if (!alarm) {
+	if (!panic) {
 		if (currentToken.type == "T_Char") {
 			parseChar();
 			parseCharList();
@@ -292,7 +292,7 @@ function parseCharList() {
  * Recursive path: Path end, check type token.
  */
 function parseType() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Type");
 }
 
@@ -301,7 +301,7 @@ function parseType() {
  * Recursive path: Path end, check char token.
  */
 function parseChar() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Char");
 }
 
@@ -310,7 +310,7 @@ function parseChar() {
  * Recursive path: Path end, check space token.
  */
 function parseSpace() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Space");
 }
 
@@ -319,7 +319,7 @@ function parseSpace() {
  * Recursive path: Path end, check digit token.
  */
 function parseDigit() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Digit");
 }
 
@@ -328,7 +328,7 @@ function parseDigit() {
  * Recursive path: Path end, check boolop token.
  */
 function parseBoolop() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Boolop");
 }
 
@@ -337,7 +337,7 @@ function parseBoolop() {
  * Recursive path: Path end, check boolval token.
  */
 function parseBoolval() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Boolval");
 }
 
@@ -346,6 +346,6 @@ function parseBoolval() {
  * Recursive path: Path end, check intop token.
  */
 function parseIntop() {
-	if (!alarm)
+	if (!panic)
 		checkToken("T_Intop");
 }

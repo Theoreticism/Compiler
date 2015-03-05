@@ -12,7 +12,7 @@ function init() {
 	//Initialize Ace embedded code editor
 	var editor = ace.edit("input");
 	editor.setTheme("ace/theme/chrome");
-	editor.getSession().setMode("ace/mode/javascript");
+	editor.getSession().setMode("ace/mode/c_cpp");
 	
 	$("#compile").on("click", function(){
 		source = editor.getValue();
