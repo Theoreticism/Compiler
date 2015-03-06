@@ -1,4 +1,4 @@
-var verbose = true;
+var verbose = false;
 var source;
 var tokenlist;
 var cst;

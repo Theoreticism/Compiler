@@ -24,20 +24,46 @@ h1 {
 #input {
 	border: 1px solid black;
 	position: absolute;
-	width: 500px;
+	width: 450px;
 	top: 0px;
 	left: 100px;
-	bottom: 40px;
+	bottom: 45px;
 }
 
 #output {
 	border: 1px solid black;
 	position: absolute;
+	width: 700px;
 	top: 0px;
-	left: 620px;
+	left: 570px;
+	bottom: 0px;
+	overflow-y: auto;
+	font-size: 12pt;
+	padding: 5px;
+	word-break: break-all;
+}
+
+#cst {
+	border: 1px solid black;
+	position: absolute;
+	top: 0px;
+	left: 1300px;
+	right: 100px;
+	bottom: 405px;
+	overflow-y: auto;
+	font-size: 12pt;
+	padding: 5px;
+	word-break: break-all;
+}
+
+#ast {
+	border: 1px solid black;
+	position: absolute;
+	top: 405px;
+	left: 1300px;
 	right: 100px;
 	bottom: 0px;
-	overflow-y: scroll;
+	overflow-y: auto;
 	font-size: 12pt;
 	padding: 5px;
 	word-break: break-all;
@@ -50,7 +76,7 @@ h1 {
 	left: 100px;
 	bottom: 0px;
 	background-color: #FFFFFF;
-	width: 240px;
+	width: 215px;
 	height: 23px;
 	text-align: center;
 	font-size: 12pt;
@@ -64,10 +90,10 @@ h1 {
 	color: black;
 	position: absolute;
 	height: 30px;
-	left: 360px;
+	left: 335px;
 	bottom: 0px;
 	background-color: #FFFFFF;
-	width: 240px;
+	width: 215px;
 	height: 23px;
 	text-align: center;
 	font-size: 12pt;
