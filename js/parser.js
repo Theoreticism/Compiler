@@ -1,4 +1,6 @@
 var currentToken;
+var currentNode;
+var indentLevel;
 var tokenIndex;
 var panic;
 
@@ -7,11 +9,14 @@ var panic;
  * Recursive path: parseProgram next.
  */
 function parser() {
+	var cst = new Node();
+	cst.contents = "cst";
+	currentNode = cst;
+	indentLevel = -1;
 	tokenIndex = 0;
 	panic = false;
 	currentToken = getNext();
 	parseProgram();
-	//TODO: CST stuff
 	return !panic;
 }
 
@@ -54,6 +59,24 @@ function checkToken(cToken) {
 			currentToken = getNext();
 		}
 	}
+}
+
+function branchNode(n) {
+	var node = new Node();
+	if (currentToken.type.substr(2) == n.toLowerCase()) {
+		node.contents = { name: n, token: currentToken };
+	} else {
+		node.contents = { name: n };
+	}
+	node.parent = currentNode;
+	currentNode.children.push(node);
+	currentNode = node;
+	//Something
+	currentNode = currentNode.parent;
+}
+
+function leafNode(n) {
+	var node = new Node();
 }
 
 /**
