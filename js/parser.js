@@ -18,7 +18,7 @@ function parser() {
 	currentToken = getNext();
 	parseProgram();
 	if (!panic) {
-		printCSTOutput(printCST(cst));
+//		printCSTOutput(printCST(cst));
 		return true;
 	} else {
 		return false;
