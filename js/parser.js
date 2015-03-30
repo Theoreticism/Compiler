@@ -17,7 +17,12 @@ function parser() {
 	panic = false;
 	currentToken = getNext();
 	parseProgram();
-	return !panic;
+	if (!panic) {
+		printCSTOutput(printCST(cst));
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -71,12 +76,38 @@ function branchNode(n) {
 	node.parent = currentNode;
 	currentNode.children.push(node);
 	currentNode = node;
-	//Something
+	window["parser" + n]();
 	currentNode = currentNode.parent;
 }
-
+/*
 function leafNode(n) {
 	var node = new Node();
+}
+*/
+function printCST(cst) {
+	var output = "";
+	if (indentLevel >= 0) {
+		output += printNode(cst.contents);
+	}
+	indentLevel++;
+	for (var i = 0; i < cst.children.length; i++) {
+		output += printCST(cst.children[i]);
+	}
+	indentLevel--;
+	return output;
+}
+
+function printNode(n) {
+	var temp = n.name;
+	if (n.token != null && n.token.value != null) {
+		n += "({0})".format(n.token.value);
+	}
+	if (indentLevel > 0) {
+		for (var i = 0; i < indentLevel; i++) {
+			n = "| " + n;
+		}
+	}
+	return n + "\n";
 }
 
 /**

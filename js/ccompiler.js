@@ -60,6 +60,24 @@ function printOutput(o) {
 }
 
 /**
+ * Prints formatted CST to CST div box.
+ *
+ * @param {string} c Formatted CST.
+ */
+function printCSTOutput(c) {
+	$("#cst").append(c + "<br />\n");
+}
+
+/**
+ * Prints formatted AST to AST div box.
+ *
+ * @param {string} a Formatted AST.
+ */
+function printASTOutput(a) {
+	$("#ast").append(a + "<br />\n");
+}
+
+/**
  * Prints verbose text output to output screen.
  *
  * @param {string} v Verbose text output.
