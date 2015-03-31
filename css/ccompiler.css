@@ -37,6 +37,7 @@ h1 {
 	top: 0px;
 	left: 570px;
 	bottom: 0px;
+	overflow-x: auto;
 	overflow-y: auto;
 	font-size: 12pt;
 	padding: 5px;
@@ -50,6 +51,7 @@ h1 {
 	left: 1300px;
 	right: 100px;
 	bottom: 405px;
+	overflow-x: auto;
 	overflow-y: auto;
 	font-size: 12pt;
 	padding: 5px;
@@ -63,6 +65,7 @@ h1 {
 	left: 1300px;
 	right: 100px;
 	bottom: 0px;
+	overflow-x: auto;
 	overflow-y: auto;
 	font-size: 12pt;
 	padding: 5px;

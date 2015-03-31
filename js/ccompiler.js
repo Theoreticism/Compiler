@@ -26,10 +26,14 @@ function init() {
 			printOutput("Parsing...");
 			if (parser()) {
 				printOutput("Parse successful!");
-			} else
+			} else {
 				printOutput("Parse unsuccessful.");
-		} else
+				printCSTOutput("Parse Error: See main output window.");
+			}
+		} else {
 			printOutput("Lex unsuccessful.");
+			printCSTOutput("Lex Error: See main output window.");
+		}
 	});
 	
 	$("#verbose").on("click", function(){
@@ -44,10 +48,12 @@ function init() {
 }
 
 /**
- * Clears text output from output screen.
+ * Clears text output from all screens.
  */
 function clearOutput() {
 	$("#output").text("");
+	$("#cst").text("");
+	$("#ast").text("");
 }
 
 /**

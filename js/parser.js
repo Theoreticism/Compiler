@@ -18,11 +18,10 @@ function parser() {
 	currentToken = getNext();
 	parseProgram();
 	if (!panic) {
-//		printCSTOutput(printCST(cst));
+		printCSTOutput(printCST(cst));
 		return true;
-	} else {
+	} else
 		return false;
-	}
 }
 
 /**
@@ -66,6 +65,11 @@ function checkToken(cToken) {
 	}
 }
 
+/**
+ * Creates a branch node for the Concrete Syntax Tree.
+ *
+ * @param {String} n The production for which a branch node is to be created
+ */
 function branchNode(n) {
 	var node = new Node();
 	if (currentToken.type.substr(2) == n.toLowerCase()) {
@@ -76,14 +80,42 @@ function branchNode(n) {
 	node.parent = currentNode;
 	currentNode.children.push(node);
 	currentNode = node;
-	window["parser" + n]();
-	currentNode = currentNode.parent;
+	
+	// parse + n(), example: parse + Block() = parseBlock()
+	window["parse" + n]();
 }
-/*
+
+/**
+ * Creates a leaf node for the Concrete Syntax Tree.
+ *
+ * @param {String} n The production for which a leaf node is to be created
+ */
 function leafNode(n) {
 	var node = new Node();
+	if (currentToken.type.substr(2) == n.toLowerCase()) {
+		node.contents = { name: n, token: currentToken };
+	} else {
+		node.contents = { name: n };
+	}
+	node.parent = currentNode;
+	currentNode.children.push(node);
+	
+	// parse + n(), example: parse + Block() = parseBlock()
+	window["parse" + n]();
 }
-*/
+
+/**
+ * Returns to parent node in CST after processing.
+ */
+function returnToParent() {
+	currentNode = currentNode.parent;
+}
+
+/**
+ * Generates the CST in human-readable format.
+ *
+ * @return Formatted CST
+ */
 function printCST(cst) {
 	var output = "";
 	if (indentLevel >= 0) {
@@ -97,17 +129,22 @@ function printCST(cst) {
 	return output;
 }
 
+/**
+ * Helper function that controls the aesthetics of the CST node printing.
+ *
+ * @return Formatted node
+ */
 function printNode(n) {
-	var temp = n.name;
+	var t = n.name;
 	if (n.token != null && n.token.value != null) {
-		n += "({0})".format(n.token.value);
+		t += "({0})".format(n.token.value);
 	}
 	if (indentLevel > 0) {
 		for (var i = 0; i < indentLevel; i++) {
-			n = "| " + n;
+			t = "| " + t;
 		}
 	}
-	return n + "\n";
+	return t + "\n";
 }
 
 /**
@@ -116,8 +153,9 @@ function printNode(n) {
  */
 function parseProgram() {
 	if (!panic) {
-		parseBlock();
+		branchNode("Block");
 		checkToken("T_EOF");
+		returnToParent();
 		success = true;
 	}
 }
@@ -129,8 +167,9 @@ function parseProgram() {
 function parseBlock() {
 	if (!panic) {
 		checkToken("T_LBrace");
-		parseStatementList();
+		branchNode("StatementList");
 		checkToken("T_RBrace");
+		returnToParent();
 	}
 }
 
@@ -141,8 +180,9 @@ function parseBlock() {
 function parseStatementList() {
 	if (!panic) {
 		if (currentToken.type == "T_Print" | currentToken.type == "T_While" | currentToken.type == "T_If" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
-			parseStatement();
-			parseStatementList();
+			branchNode("Statement");
+			branchNode("StatementList");
+			returnToParent();
 		} else {
 			// Allow no action to be taken as a result; epsilon production	
 		}
@@ -157,22 +197,28 @@ function parseStatement() {
 	if (!panic) {
 		switch (currentToken.type) {
 			case 'T_Print':
-				parsePrintStatement();
+				branchNode("PrintStatement");
+				returnToParent();
 				break;
 			case 'T_While':
-				parseWhileStatement();
+				branchNode("WhileStatement");
+				returnToParent();
 				break;
 			case 'T_If':
-				parseIfStatement();
+				branchNode("IfStatement");
+				returnToParent();
 				break;
 			case 'T_Type':
-				parseVarDecl();
+				branchNode("VarDecl");
+				returnToParent();
 				break;
 			case 'T_ID':
-				parseAssignmentStatement();
+				branchNode("AssignmentStatement");
+				returnToParent();
 				break;
 			case 'T_LBrace':
-				parseBlock();
+				branchNode("Block");
+				returnToParent();
 				break;
 			default:
 				break;
@@ -188,8 +234,9 @@ function parsePrintStatement() {
 	if (!panic) {
 		checkToken("T_Print");
 		checkToken("T_LParen");
-		parseExpr();
+		branchNode("Expr");
 		checkToken("T_RParen");
+		returnToParent();
 	}
 }
 
@@ -200,8 +247,9 @@ function parsePrintStatement() {
 function parseWhileStatement() {
 	if (!panic) {
 		checkToken("T_While");
-		parseBooleanExpr();
-		parseBlock();
+		branchNode("BooleanExpr");
+		branchNode("Block");
+		returnToParent();
 	}
 }
 
@@ -212,8 +260,9 @@ function parseWhileStatement() {
 function parseIfStatement() {
 	if (!panic) {
 		checkToken("T_If");
-		parseBooleanExpr();
-		parseBlock();
+		branchNode("BooleanExpr");
+		branchNode("Block");
+		returnToParent();
 	}
 }
 
@@ -223,9 +272,10 @@ function parseIfStatement() {
  */
 function parseAssignmentStatement() {
 	if (!panic) {
-		parseId();
+		leafNode("Id");
 		checkToken("T_Assign");
-		parseExpr();
+		branchNode("Expr");
+		returnToParent();
 	}
 }
 
@@ -235,8 +285,8 @@ function parseAssignmentStatement() {
  */
 function parseVarDecl() {
 	if (!panic) {
-		parseType();
-		parseId();
+		leafNode("Type");
+		leafNode("Id");
 	}
 }
 
@@ -248,19 +298,23 @@ function parseExpr() {
 	if (!panic) {
 		switch (currentToken.type) {
 			case 'T_Digit':
-				parseIntExpr();
+				branchNode("IntExpr");
+				returnToParent();
 				break;
 			case 'T_Quote':
-				parseStringExpr();
+				branchNode("StringExpr");
+				returnToParent();
 				break;
 			case 'T_LParen':
-				parseBooleanExpr();
+				branchNode("BooleanExpr");
+				returnToParent();
 				break;
 			case 'T_Boolval':
-				parseBooleanExpr();
+				branchNode("BooleanExpr");
+				returnToParent();
 				break;
 			case 'T_ID':
-				parseId();
+				leafNode("Id");
 				break;
 			default:
 				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
@@ -276,10 +330,11 @@ function parseExpr() {
  */
 function parseIntExpr() {
 	if (!panic) {
-		parseDigit();
+		leafNode("Digit");
 		if (currentToken.type == "T_Intop") {
-			parseIntop();
-			parseExpr();
+			leafNode("Intop");
+			branchNode("Expr");
+			returnToParent();
 		}
 	}
 }
@@ -291,8 +346,9 @@ function parseIntExpr() {
 function parseStringExpr() {
 	if (!panic) {
 		checkToken("T_Quote");
-		parseCharList();
+		branchNode("CharList");
 		checkToken("T_Quote");
+		returnToParent();
 	}
 }
 
@@ -304,12 +360,13 @@ function parseBooleanExpr() {
 	if (!panic) {
 		if (currentToken.type == "T_LParen") {
 			checkToken("T_LParen");
-			parseExpr();
-			parseBoolop();
-			parseExpr();
+			branchNode("Expr");
+			leafNode("Boolop");
+			branchNode("Expr");
 			checkToken("T_RParen");
+			returnToParent();
 		} else if (currentToken.type == "T_Boolval") {
-			parseBoolval();
+			leafNode("Boolval");
 		}
 	}
 }
@@ -330,11 +387,13 @@ function parseId() {
 function parseCharList() {
 	if (!panic) {
 		if (currentToken.type == "T_Char") {
-			parseChar();
-			parseCharList();
+			leafNode("Char");
+			branchNode("CharList");
+			returnToParent();
 		} else if (currentToken.type == "T_Space") {
-			parseSpace();
-			parseCharList();
+			leafNode("Space");
+			branchNode("CharList");
+			returnToParent();
 		} else {
 			// Allow no action as a result; epsilon production
 		}
