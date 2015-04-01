@@ -24,7 +24,7 @@ h1 {
 #input {
 	border: 1px solid black;
 	position: absolute;
-	width: 450px;
+	width: 420px;
 	top: 0px;
 	left: 100px;
 	bottom: 45px;
@@ -33,9 +33,9 @@ h1 {
 #output {
 	border: 1px solid black;
 	position: absolute;
-	width: 700px;
+	width: 650px;
 	top: 0px;
-	left: 570px;
+	left: 540px;
 	bottom: 0px;
 	overflow-x: auto;
 	overflow-y: auto;
@@ -47,13 +47,13 @@ h1 {
 #cst {
 	border: 1px solid black;
 	position: absolute;
+	width: 468px;
 	top: 0px;
-	left: 1300px;
 	right: 100px;
 	bottom: 405px;
 	overflow-x: auto;
 	overflow-y: auto;
-	font-size: 12pt;
+	font-size: 10pt;
 	padding: 5px;
 	word-break: break-all;
 }
@@ -61,8 +61,8 @@ h1 {
 #ast {
 	border: 1px solid black;
 	position: absolute;
+	width: 468px;
 	top: 405px;
-	left: 1300px;
 	right: 100px;
 	bottom: 0px;
 	overflow-x: auto;
@@ -79,7 +79,7 @@ h1 {
 	left: 100px;
 	bottom: 0px;
 	background-color: #FFFFFF;
-	width: 215px;
+	width: 200px;
 	height: 23px;
 	text-align: center;
 	font-size: 12pt;
@@ -93,10 +93,10 @@ h1 {
 	color: black;
 	position: absolute;
 	height: 30px;
-	left: 335px;
+	left: 320px;
 	bottom: 0px;
 	background-color: #FFFFFF;
-	width: 215px;
+	width: 200px;
 	height: 23px;
 	text-align: center;
 	font-size: 12pt;

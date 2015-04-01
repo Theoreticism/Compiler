@@ -18,7 +18,8 @@ function parser() {
 	currentToken = getNext();
 	parseProgram();
 	if (!panic) {
-		printCSTOutput(printCST(cst));
+		// The <pre> HTML tag defines preformatted text
+		printCSTOutput("Concrete Syntax Tree<pre>{0}</pre>".format(printCST(cst)));
 		return true;
 	} else
 		return false;
