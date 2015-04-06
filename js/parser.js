@@ -16,7 +16,7 @@ function parser() {
 	tokenIndex = 0;
 	panic = false;
 	currentToken = getNext();
-	parseProgram();
+	branchNode("Program");
 	if (!panic) {
 		// The <pre> HTML tag defines preformatted text
 		printCSTOutput("Concrete Syntax Tree<pre>{0}</pre>".format(printCST(cst)));
@@ -78,11 +78,17 @@ function branchNode(n) {
 	} else {
 		node.contents = { name: n };
 	}
+	
+	// Assign a parent (current node)
 	node.parent = currentNode;
+	
+	// Go to parent's children
 	currentNode.children.push(node);
+	
+	// Update current node
 	currentNode = node;
 	
-	// parse + n(), example: parse + Block() = parseBlock()
+	// parse + n(), example: parse + Block() = parseBlock() function call
 	window["parse" + n]();
 }
 
@@ -98,10 +104,14 @@ function leafNode(n) {
 	} else {
 		node.contents = { name: n };
 	}
+	
+	// Assign a parent (current node)
 	node.parent = currentNode;
+	
+	// Go to parent's children
 	currentNode.children.push(node);
 	
-	// parse + n(), example: parse + Block() = parseBlock()
+	// parse + n(), example: parse + Block() = parseBlock() function call
 	window["parse" + n]();
 }
 
@@ -142,7 +152,7 @@ function printNode(n) {
 	}
 	if (indentLevel > 0) {
 		for (var i = 0; i < indentLevel; i++) {
-			t = "| " + t;
+			t = "|" + t;
 		}
 	}
 	return t + "\n";
