@@ -1,5 +1,5 @@
 var currentToken;
-var currentNode;
+var currentCSTNode;
 var indentLevel;
 var tokenIndex;
 var panic;
@@ -9,9 +9,9 @@ var panic;
  * Recursive path: parseProgram next.
  */
 function parser() {
-	var cst = new Node();
+	cst = new Node();
 	cst.contents = "cst";
-	currentNode = cst;
+	currentCSTNode = cst;
 	indentLevel = -1;
 	tokenIndex = 0;
 	panic = false;
@@ -80,13 +80,13 @@ function branchNode(n) {
 	}
 	
 	// Assign a parent (current node)
-	node.parent = currentNode;
+	node.parent = currentCSTNode;
 	
 	// Go to parent's children
-	currentNode.children.push(node);
+	currentCSTNode.children.push(node);
 	
 	// Update current node
-	currentNode = node;
+	currentCSTNode = node;
 	
 	// parse + n(), example: parse + Block() = parseBlock() function call
 	window["parse" + n]();
@@ -106,10 +106,10 @@ function leafNode(n) {
 	}
 	
 	// Assign a parent (current node)
-	node.parent = currentNode;
+	node.parent = currentCSTNode;
 	
 	// Go to parent's children
-	currentNode.children.push(node);
+	currentCSTNode.children.push(node);
 	
 	// parse + n(), example: parse + Block() = parseBlock() function call
 	window["parse" + n]();
@@ -119,7 +119,7 @@ function leafNode(n) {
  * Returns to parent node in CST after processing.
  */
 function returnToParent() {
-	currentNode = currentNode.parent;
+	currentCSTNode = currentCSTNode.parent;
 }
 
 /**
@@ -152,7 +152,7 @@ function printNode(n) {
 	}
 	if (indentLevel > 0) {
 		for (var i = 0; i < indentLevel; i++) {
-			t = "|" + t;
+			t = "| " + t;
 		}
 	}
 	return t + "\n";

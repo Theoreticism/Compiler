@@ -1,17 +1,21 @@
-var currentNode;
+var currentASTNode;
 var indentLevel;
 var success;
 
 function analyzer() {
-	var ast = new Node();
+	ast = new Node();
 	ast.contents = "ast";
-	currentNode = ast;
+	currentASTNode = ast;
 	indentLevel = -1;
 	success = true;
 	if (success) {
 		return true;
 	} else
 		return false;
+}
+
+function buildAST() {
+	
 }
 
 function printAST(ast) {
@@ -33,4 +37,22 @@ function printNode(n) {
 		t = "|" + t;
 	}
 	return t + "\n";
+}
+
+function analyzeNode(node) {
+	switch (node.contents.name) {
+		case 'Block':
+		case 'StatementList':
+		case 'IntExpr':
+		case 'Id':
+	}
+}
+
+function newNode(contents) {
+	var node = new Node();
+	node.contents = [];
+	node.contents.name = contents;
+	node.parent = currentASTNode;
+	currentASTNode.children.push(node);
+	currentASTNode = node;
 }
