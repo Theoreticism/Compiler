@@ -1,27 +1,105 @@
+var currentEnvNode;
 var currentASTNode;
 var indentLevel;
+var symbolTable;
 var success;
 
+/**
+ * Base semantics analyzer function. Handles creation of environment and AS trees.
+ *
+ * @return {boolean} True if semantic analysis was successful, false otherwise.
+ */
 function analyzer() {
-	ast = new Node();
-	ast.contents = "ast";
-	currentASTNode = ast;
-	indentLevel = -1;
-	success = true;
+	environ = new Node();
+	environ.contents = "Environment";
+	currentEnvNode = environ;
+	success = analyzeNode(cst);
 	if (success) {
+		symbolTable = "";
+		buildSymbolTable(environ);
+		if (symbolTable != "") {
+			printOutput(symbolTable);
+		}
+		ast = new Node();
+		ast.contents = "ast";
+		currentASTNode = ast;
+		indentLevel = -1;
+		// The <pre> HTML tag defines preformatted text
+		printASTOutput("Abstract Syntax Tree<pre>{0}</pre>".format(printAST(ast)));
 		return true;
 	} else
 		return false;
 }
 
-function buildAST() {
+/**
+ * Recursively builds and connects each node in the Abstract Syntax Tree.
+ *
+ * @param {Node} node The node being analyzed
+ */
+function buildAST(node) {
+	var build = false;
+	// Some type of statement (print, while, if, etc.)
+	if ((node.contents.name.indexOf("Statement") > 0) || 
+		// Non-statement or leaf node or node with multiple children
+		(node.children.length != 1 && node.contents.name.indexOf("Statement") == -1) ||
+		// Opening statement - Block
+		(node.contents.name == "Block")) {
+			if (node.children.length == 0) {
+				// Create and insert new AST leaf node
+				var astNode = new Node();
+				var nodeContents;
+				
+				if (node.contents.name == "CharList") {
+					nodeContents = '"{0}"'.format(node.contents.token.value);
+				} else if (node.contents.name == "Intop") {
+					nodeContents = "+";
+				} else {
+					nodeContents = node.contents.token.value;
+				}
+				
+				astNode.contents = [];
+				astNode.contents.name = nodeContents;
+				astNode.parent = currentASTNode;
+				currentASTNode.children.push(astNode);
+				currentASTNode = astNode;
+			} else {
+				// Create and insert new AST branch node
+				var astNode = new Node();
+				astNode.contents = [];
+				astNode.contents.name = node.contents.name;
+				astNode.parent = currentASTNode;
+				currentASTNode.children.push(astNode);
+				currentASTNode = astNode;
+			}
+		build = true;
+	}
 	
+	// Reached leaf node and current AST node not Block, return to parent
+	if (node.children.length == 0 && currentASTNode.contents.name != "Block") {
+		currentASTNode = currentASTNode.parent;
+	}
+	
+	// Reached branch node or Block node or Print node, return to parent
+	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && build == true) {
+		currentASTNode = currentASTNode.parent;
+	}
+	
+	// Recursively build AST to all available child nodes
+	for (var i = 0; i < node.children.length; i++) {
+		buildAST(node.children[i]);
+	}
 }
 
+/**
+ * Helper function that recurses and prints the entire Abstract Syntax Tree.
+ *
+ * @param {Node} ast The root node of the AST.
+ * @return {String} The AST in human-readable format.
+ */
 function printAST(ast) {
 	var output = "";
 	if (indentLevel >= 0) {
-		output += printNode(ast.contents);
+		output += printASTNode(ast.contents);
 	}
 	indentLevel++;
 	for (var i = 0; i < ast.children.length; i++) {
@@ -31,7 +109,12 @@ function printAST(ast) {
 	return output;
 }
 
-function printNode(n) {
+/**
+ * Helper function that prints each AST node with correct indentation.
+ *
+ * @param {Node} n Node being printed
+ */
+function printASTNode(n) {
 	var t = n.name;
 	if (indentLevel > 0) {
 		t = "|" + t;
@@ -39,15 +122,11 @@ function printNode(n) {
 	return t + "\n";
 }
 
-function analyzeNode(node) {
-	switch (node.contents.name) {
-		case 'Block':
-		case 'StatementList':
-		case 'IntExpr':
-		case 'Id':
-	}
-}
-
+/**
+ * Helper function that creates a new node in the Abstract Syntax Tree.
+ *
+ * @param {String} contents Name value of the new node
+ */
 function newNode(contents) {
 	var node = new Node();
 	node.contents = [];
@@ -55,4 +134,232 @@ function newNode(contents) {
 	node.parent = currentASTNode;
 	currentASTNode.children.push(node);
 	currentASTNode = node;
+}
+
+/**
+ * Recursively analyzes every node given from the Concrete Syntax Tree.
+ *
+ * @param {Node} cst The given Concrete Syntax Tree
+ * @return {boolean} True if no semantic errors were thrown, false otherwise
+ */
+function analyzeNode(cst) {
+	switch (cst.contents.name) {
+		case 'Block':
+			// Signifies beginning of Block
+			var enviroNode = new Node();
+			enviroNode.contents = [];
+			// Set parallel scopes to this specific Block
+			enviroNode.contents["scopeLevel"] = currentEnvNode.children.length + 1;
+			envNode.parent = currentEnvNode;
+			currentEnvNode.children.push(enviroNode);
+			currentEnvNode = enviroNode;
+			printOutput("Opening scope {0}".format(getScope(currentEnvNode)));
+		case 'StatementList':
+			// StatementList with no children signifies end of Block
+			if (cst.children.length == 0) {
+				printOutput("Closing scope {0}".format(getScope(currentEnvNode)));
+				currentEnvNode = currentEnvNode.parent;
+			}
+		case 'IntExpr':
+			// Handles IntExpr operations
+			if (cst.children.length == 3) {
+				if (cst.children[2].children[0].contents.name == "Id") {
+					var value = cst.children[2].children[0].contents.token.value;
+					var lineNum = cst.children[2].children[0].contents.token.lineNumber;
+					var linePos = cst.children[2].children[0].contents.token.linePosition;
+					var idType = getType(currentEnvNode, value);
+					
+					if (!varInitialized(currentEnvNode, value)) {
+						printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(value, lineNum, linePos));
+					}
+					
+					if (idType != "int") {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						return false;
+					} else {
+						// For testing purposes
+						printVerbose("Type check match: int to int");
+					}
+				} else if (cst.children[2].children[0].contents.name != "IntExpr") {
+					var lineNum = cst.children[0].contents.token.lineNumber;
+					var linePos = cst.children[0].contents.token.linePosition;
+					var tName = cst.children[2].children[0].contents.name;
+					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
+				}
+			}
+		case 'Id':
+			// Handles variable identifiers
+			var parent = cst.parent.contents.name;
+			var value = cst.contents.token.value;
+			var lineNum = cst.contents.token.lineNumber;
+			var linePos = cst.contents.token.linePosition;
+			var idType;
+			
+			// Check id type
+			if (parent = "VarDecl") {
+				idType = cst.parent.children[0].contents.token.value;
+			} else if (!inScope(currentEnvNode, value)) {
+				printOutput("Semantic Error: Undeclared variable '{0}' used  on line {1} character {2}".format(value, lineNum, linePos));
+				return false;
+			} else {
+				idType = getType(currentEnvNode, value);
+				varUsed(currentEnvNode, value);
+			}
+			
+			// Handles variable declaration
+			switch (value) {
+				case 'VarDecl':
+					// If var has not already been declared in this scope, add to current environment node
+					if (currentEnvNode.contents[value] == null) {
+						// Fastest way to deep clone an object
+						var token = JSON.parse(JSON.stringify(cst.contents.token));
+						token.name = value;
+						token.type = idType;
+						token.value = null;
+						currentEnvNode.contents[value] = token;
+						printOutput("Variable declared: {0} {1}".format(idType, value));
+					} else {
+						printOutput("Semantic Error: Variable '{0}' on line {1} character {2} already declared".format(value, lineNum, linePos))
+						return false;
+					}
+				case 'Expr':
+					var expType = cst.parent.parent.contents.name;
+					if (expType == "IntExpr" && idType != "int") {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						return false;
+					} else if (expType == "BooleanExpr") {
+						var comparedToken = cst.parent.parent.children[2].children[0];
+						var expectedType = comparedToken.contents.name;
+						if (expectedType == "Id") {
+							expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
+						} else {
+							expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
+						}
+						if (idType != expectedType) {
+							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+							return false;
+						} else {
+							// For testing purposes
+							printVerbose("Type check match: {0} to {1}".format(idType, expectedType));
+						}
+					}
+				case 'AssignmentStatement':
+					var comparedToken = cst.parent.children[1].children[0];
+					var expectedType = comparedToken.contents.name;
+					if (expectedType == "Id") {
+						expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
+						if (!varInitialized(currentEnvNode, comparedToken.contents.token.value)) {
+							printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(comparedToken.contents.token.value, lineNum, linePos));
+						}
+					} else {
+						expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
+					}
+					if (idType != expectedType) {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+						return false;
+					} else {
+						//For testing purposes
+						printVerbose("Type check match: {0} to {1}".format(idType, expectedType));
+						if (currentEnvNode.contents[value] != null) {
+							if (cst.contents[value].initialized == true) {
+								return true;
+							} else {
+								return false;
+							}
+						} else if (currentEnvNode.parent != null) {
+							return varInitialized(cst.parent, value);
+						} else {
+							return false;
+						}
+					}
+				default:
+					break;
+			}
+		default:
+			break;
+		
+		// Recursively analyze down the tree
+		for (var i = 0; i < cst.children.length; i++) {
+			if (!analyzeNode(cst.children[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+/**
+ * Recursively builds the symbol table from the environment (scope) tree.
+ *
+ * @param {Node} environment The environment tree
+ */
+function buildSymbolTable(environment) {
+	if (environment.contents != "Environment") {
+		for (var key in environment.contents) {
+			// Note: hasOwnProperty returns a boolean value based on if the object has the property key
+			if (key != "scopeLevel" && environment.contents.hasOwnProperty(key)) {
+				var token = node.contents[key];
+				var used = "";
+				if (token.used == false) {
+					used = "un";
+					symbolTable += "Warning: Unused variable {0} on line {1} character {2}<br />".format(token.name, token.lineNumber, token.linePosition);
+				}
+				printOutput("{0}: {1} on line {2} character {3} in scope {4} status: {5}used".format(token.name, token.lineNumber, token.linePosition, getScope(environment), used));
+			}
+		}
+	}
+	
+	if (environment.children != null) {
+		for (var i = 0; i < node.children.length; i++) {
+			buildSymbolTable(node.children[i]);
+		}
+	}
+}
+
+function getScope(node) {
+	if (node.parent.contents == "Environment") {
+		// Base scope
+		return "1";
+	} else {
+		// Recursively get parent scope and append
+		return getScope(node.parent) + "." + node.contents["scopeLevel"];
+	}
+}
+
+function getType(node, c) {
+	if (node.contents[c] != null) {
+		return node.contents[c].type;
+	} else if (node.parent != null) {
+		return getType(node.parent, c);
+	} else {
+		return false;
+	}
+}
+
+function inScope(node, c) {
+	if (node.contents[c] != null) {
+		return true;
+	} else if (node.parent != null) {
+		return inScope(node.parent, sc);
+	} else {
+		return false;
+	}
+}
+
+function varUsed(node, c) {
+	if (node.contents[c] != null) {
+		node.contents[c].used = true;
+		printOutput("Variable {0} detected as used. Declared in scope {1}".format(c, node.contents["scopeLevel"]));
+	} else if (node.parent != null) {
+		varUsed(node.parent, c);
+	}
+}
+
+function varInitialized(node, c) {
+	if (node.contents[c] != null) {
+		node.contents[c].initialized = true;
+		printOutput("Variable {0} initialized. Declared in scope {1}".format(c, node.contents["scopeLevel"]));
+	} else if (node.parent != null) {
+		varInitialized(node.parent, c);
+	}
 }

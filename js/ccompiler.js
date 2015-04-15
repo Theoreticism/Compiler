@@ -26,6 +26,13 @@ function init() {
 			printOutput("Parsing...");
 			if (parser()) {
 				printOutput("Parse successful!");
+				printOutput("Analyzing semantics...");
+				if (analyzer()) {
+					printOutput("Semantics analysis successful!");
+				} else {
+					printOutput("Semantics analysis unsuccessful.");
+					printASTOutput("Semantics Error: See main output window.");
+				}
 			} else {
 				printOutput("Parse unsuccessful.");
 				printCSTOutput("Parse Error: See main output window.");

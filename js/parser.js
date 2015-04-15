@@ -130,7 +130,7 @@ function returnToParent() {
 function printCST(cst) {
 	var output = "";
 	if (indentLevel >= 0) {
-		output += printNode(cst.contents);
+		output += printCSTNode(cst.contents);
 	}
 	indentLevel++;
 	for (var i = 0; i < cst.children.length; i++) {
@@ -145,7 +145,7 @@ function printCST(cst) {
  *
  * @return Formatted node
  */
-function printNode(n) {
+function printCSTNode(n) {
 	var t = n.name;
 	if (n.token != null && n.token.value != null) {
 		t += "({0})".format(n.token.value);
