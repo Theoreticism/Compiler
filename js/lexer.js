@@ -17,7 +17,7 @@ var tokens = {
 	T_While: "T_While",     // while
 	T_If: "T_If",           // if
 	T_Type: "T_Type",       // int, string, boolean
-	T_ID: "T_ID",           // [a-Z]
+	T_Id: "T_Id",           // [a-Z]
 	T_Digit: "T_Digit",     // [0-9]
 	T_Space: "T_Space",     // \s (whitespace metacharacter)
 	T_Char: "T_Char"        // a-Z
@@ -300,8 +300,8 @@ function idToken(lineNumber, linePosition, value) {
 				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Boolval, value.substr(i, 5)));
 				i += 4;
 			} else if (indiv[i].match(/[a-z]/)) {
-				makeToken(tokens.T_ID, lineNumber, linePosition, indiv[i]);
-				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_ID, indiv[i]));
+				makeToken(tokens.T_Id, lineNumber, linePosition, indiv[i]);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Id, indiv[i]));
 			} else if (indiv[i].match(/[0-9]/)) {
 				makeToken(tokens.T_Digit, lineNumber, linePosition, indiv[i]);
 				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Digit, indiv[i]));

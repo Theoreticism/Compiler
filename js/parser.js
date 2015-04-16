@@ -53,9 +53,9 @@ function checkToken(cToken) {
 			printVerbose("Got a {0}!".format(cToken));
 		} else {
 			if (cToken != "T_RBrace") {
-				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format(cToken, currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format(cToken, currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			} else {
-				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_ID | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Print | T_Id | T_Type | T_While | T_If | T_LBrace | T_RBrace", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 			}
 			panic = true;
 		}
@@ -73,11 +73,13 @@ function checkToken(cToken) {
  */
 function branchNode(n) {
 	var node = new Node();
-	if (currentToken.type.substr(2) == n.toLowerCase()) {
-		node.contents = { name: n, token: currentToken };
-	} else {
-		node.contents = { name: n };
+	
+	if (DEBUG) {
+		printOutput(currentToken.type.substr(2) + " | " + n + " BRANCHNODE");
 	}
+	
+	// Fill contents with value n as name
+	node.contents = { name: n };
 	
 	// Assign a parent (current node)
 	node.parent = currentCSTNode;
@@ -99,7 +101,13 @@ function branchNode(n) {
  */
 function leafNode(n) {
 	var node = new Node();
-	if (currentToken.type.substr(2) == n.toLowerCase()) {
+	
+	if (DEBUG) {
+		printOutput(currentToken.type.substr(2) + " | " + n + " | " + currentToken.value + " LEAFNODE");
+	}
+	
+	// For leaf nodes, store token as well as name
+	if (currentToken.type.substr(2) == n) {
 		node.contents = { name: n, token: currentToken };
 	} else {
 		node.contents = { name: n };
@@ -190,7 +198,7 @@ function parseBlock() {
  */
 function parseStatementList() {
 	if (!panic) {
-		if (currentToken.type == "T_Print" | currentToken.type == "T_While" | currentToken.type == "T_If" | currentToken.type == "T_Type" | currentToken.type == "T_ID" | currentToken.type == "T_LBrace") {
+		if (currentToken.type == "T_Print" | currentToken.type == "T_While" | currentToken.type == "T_If" | currentToken.type == "T_Type" | currentToken.type == "T_Id" | currentToken.type == "T_LBrace") {
 			branchNode("Statement");
 			branchNode("StatementList");
 			returnToParent();
@@ -223,7 +231,7 @@ function parseStatement() {
 				branchNode("VarDecl");
 				returnToParent();
 				break;
-			case 'T_ID':
+			case 'T_Id':
 				branchNode("AssignmentStatement");
 				returnToParent();
 				break;
@@ -324,11 +332,11 @@ function parseExpr() {
 				branchNode("BooleanExpr");
 				returnToParent();
 				break;
-			case 'T_ID':
+			case 'T_Id':
 				leafNode("Id");
 				break;
 			default:
-				printVerbose("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_ID", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
+				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_Id", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
 				panic = true;
 				break;
 		}
@@ -388,7 +396,7 @@ function parseBooleanExpr() {
  */
 function parseId() {
 	if (!panic)
-		checkToken("T_ID");
+		checkToken("T_Id");
 }
 
 /**

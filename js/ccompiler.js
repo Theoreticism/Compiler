@@ -1,3 +1,4 @@
+var DEBUG = false;
 var verbose = false;
 var source;
 var tokenlist;
@@ -22,15 +23,15 @@ function init() {
 		printOutput("Lexing...");
 		
 		if (lexer()) {
-			printOutput("Lex successful!");
+			printOutput("Lex successful!<hr />");
 			printOutput("Parsing...");
 			if (parser()) {
-				printOutput("Parse successful!");
+				printOutput("Parse successful!<hr />");
 				printOutput("Analyzing semantics...");
 				if (analyzer()) {
-					printOutput("Semantics analysis successful!");
+					printOutput("Semantic analysis successful!<hr />");
 				} else {
-					printOutput("Semantics analysis unsuccessful.");
+					printOutput("Semantic analysis unsuccessful.");
 					printASTOutput("Semantics Error: See main output window.");
 				}
 			} else {

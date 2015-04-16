@@ -9,4 +9,6 @@ function Token(type, lineNumber, linePosition, value) {
 	this.lineNumber = lineNumber;
 	this.linePosition = linePosition;
 	this.value = value;	
+	this.used = false;
+	this.initialized = false;
 }

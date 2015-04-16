@@ -13,8 +13,10 @@ function analyzer() {
 	environ = new Node();
 	environ.contents = "Environment";
 	currentEnvNode = environ;
+	printOutput("Starting scope and type check...");
 	success = analyzeNode(cst);
 	if (success) {
+		printOutput("Scope and type check success!");
 		symbolTable = "";
 		buildSymbolTable(environ);
 		if (symbolTable != "") {
@@ -23,12 +25,180 @@ function analyzer() {
 		ast = new Node();
 		ast.contents = "ast";
 		currentASTNode = ast;
+		buildAST(cst.children[0]);
 		indentLevel = -1;
 		// The <pre> HTML tag defines preformatted text
 		printASTOutput("Abstract Syntax Tree<pre>{0}</pre>".format(printAST(ast)));
 		return true;
-	} else
+	} else {
 		return false;
+	}
+}
+
+/**
+ * Recursively analyzes every node given from the Concrete Syntax Tree.
+ *
+ * @param {Node} cst The given Concrete Syntax Tree
+ * @return {boolean} True if no semantic errors were thrown, false otherwise
+ */
+function analyzeNode(cst) {
+	if (DEBUG) {
+		printOutput(cst.contents.name);
+	}
+	
+	switch (cst.contents.name) {
+		case 'Block':
+			// Signifies beginning of Block
+			var enviroNode = new Node();
+			enviroNode.contents = [];
+			enviroNode.contents["scopeLevel"] = currentEnvNode.children.length + 1;
+			enviroNode.parent = currentEnvNode;
+			currentEnvNode.children.push(enviroNode);
+			currentEnvNode = enviroNode;
+			printOutput("Opening scope {0}".format(getScope(currentEnvNode)));
+			break;
+		case 'StatementList':
+			// StatementList with no children signifies end of Block
+			if (cst.children.length == 0) {
+				printOutput("Closing scope {0}".format(getScope(currentEnvNode)));
+				currentEnvNode = currentEnvNode.parent;
+			}
+			break;
+		case 'IntExpr':
+			// Handles IntExpr operations
+			if (cst.children.length == 3) {
+				if (cst.children[2].children[0].contents.name == "Id") {
+					var value = cst.children[2].children[0].contents.token.value;
+					var lineNum = cst.children[2].children[0].contents.token.lineNumber;
+					var linePos = cst.children[2].children[0].contents.token.linePosition;
+					var idType = getType(currentEnvNode, value);
+					
+					if (!isInitialized(currentEnvNode, value)) {
+						printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(value, lineNum, linePos));
+					}
+					
+					if (idType != "int") {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						return false;
+					} else {
+						printOutput("Type check match: int to int");
+					}
+				} else if (cst.children[2].children[0].contents.name != "IntExpr") {
+					var lineNum = cst.children[0].contents.token.lineNumber;
+					var linePos = cst.children[0].contents.token.linePosition;
+					var tName = cst.children[2].children[0].contents.name;
+					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
+					return false;
+				} else {
+					printOutput("Type check match: int to int");
+				}
+			}
+			break;
+		case 'Id':
+			// Handles variable identifiers
+			var parent = cst.parent.contents.name;
+			var value = cst.contents.token.value;
+			var lineNum = cst.contents.token.lineNumber;
+			var linePos = cst.contents.token.linePosition;
+			var idType;
+			
+			// Check id type
+			if (parent == "VarDecl") {
+				idType = cst.parent.children[0].contents.token.value;
+			} else if (!inScope(currentEnvNode, value)) {
+				printOutput("Semantic Error: Undeclared variable '{0}' used  on line {1} character {2}".format(value, lineNum, linePos));
+				return false;
+			} else {
+				idType = getType(currentEnvNode, value);
+				varUsed(currentEnvNode, value);
+			}
+			
+			// Handles variable declaration
+			switch (parent) {
+				case 'VarDecl':
+					// If var has not already been declared in this scope, add to current environment node
+					if (currentEnvNode.contents[value] == null) {
+						// Fastest way to deep clone an object
+						var token = JSON.parse(JSON.stringify(cst.contents.token));
+						token.name = value;
+						token.type = idType;
+						token.value = null;
+						currentEnvNode.contents[value] = token;
+						printOutput("Variable declared: '{0}' of type {1}".format(value, idType));
+					} else {
+						printOutput("Semantic Error: Variable '{0}' on line {1} character {2} already declared".format(value, lineNum, linePos))
+						return false;
+					}
+					break;
+				case 'Expr':
+					var expType = cst.parent.parent.contents.name;
+					if (expType == "IntExpr" && idType != "int") {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						return false;
+					} else if (expType == "BooleanExpr") {
+						printOutput(cst.contents.name);
+						var comparedToken = cst.parent.parent.children[2].children[0];
+						var expectedType = comparedToken.contents.name;
+						if (expectedType == "Id") {
+							expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
+						} else {
+							expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
+						}
+						if (idType != expectedType) {
+							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+							return false;
+						} else {
+							printOutput("Type check match: {0} to {1}".format(idType, expectedType));
+						}
+					}
+					break;
+				case 'AssignmentStatement':
+					var comparedToken = cst.parent.children[1].children[0];
+					var expectedType = comparedToken.contents.name;
+					if (expectedType == "Id") {
+						expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
+						if (!isInitialized(currentEnvNode, comparedToken.contents.token.value)) {
+							printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(comparedToken.contents.token.value, lineNum, linePos));
+						}
+					} else {
+						expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
+					}
+					if (idType != expectedType) {
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+						return false;
+					} else {
+						printOutput("Type check match: {0} to {1}".format(idType, expectedType));
+						varInitialized(currentEnvNode, value);
+					}
+					break;
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+	// Recursively analyze down the tree
+	for (var i = 0; i < cst.children.length; i++) {
+		if (!analyzeNode(cst.children[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Helper function that creates a new node in the Abstract Syntax Tree.
+ *
+ * @param {String} contents Name value of the new node
+ */
+function newNode(contents) {
+	var node = new Node();
+	node.contents = [];
+	node.contents.name = contents;
+	node.parent = currentASTNode;
+	currentASTNode.children.push(node);
+	currentASTNode = node;
 }
 
 /**
@@ -123,172 +293,6 @@ function printASTNode(n) {
 }
 
 /**
- * Helper function that creates a new node in the Abstract Syntax Tree.
- *
- * @param {String} contents Name value of the new node
- */
-function newNode(contents) {
-	var node = new Node();
-	node.contents = [];
-	node.contents.name = contents;
-	node.parent = currentASTNode;
-	currentASTNode.children.push(node);
-	currentASTNode = node;
-}
-
-/**
- * Recursively analyzes every node given from the Concrete Syntax Tree.
- *
- * @param {Node} cst The given Concrete Syntax Tree
- * @return {boolean} True if no semantic errors were thrown, false otherwise
- */
-function analyzeNode(cst) {
-	switch (cst.contents.name) {
-		case 'Block':
-			// Signifies beginning of Block
-			var enviroNode = new Node();
-			enviroNode.contents = [];
-			// Set parallel scopes to this specific Block
-			enviroNode.contents["scopeLevel"] = currentEnvNode.children.length + 1;
-			envNode.parent = currentEnvNode;
-			currentEnvNode.children.push(enviroNode);
-			currentEnvNode = enviroNode;
-			printOutput("Opening scope {0}".format(getScope(currentEnvNode)));
-		case 'StatementList':
-			// StatementList with no children signifies end of Block
-			if (cst.children.length == 0) {
-				printOutput("Closing scope {0}".format(getScope(currentEnvNode)));
-				currentEnvNode = currentEnvNode.parent;
-			}
-		case 'IntExpr':
-			// Handles IntExpr operations
-			if (cst.children.length == 3) {
-				if (cst.children[2].children[0].contents.name == "Id") {
-					var value = cst.children[2].children[0].contents.token.value;
-					var lineNum = cst.children[2].children[0].contents.token.lineNumber;
-					var linePos = cst.children[2].children[0].contents.token.linePosition;
-					var idType = getType(currentEnvNode, value);
-					
-					if (!varInitialized(currentEnvNode, value)) {
-						printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(value, lineNum, linePos));
-					}
-					
-					if (idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
-						return false;
-					} else {
-						// For testing purposes
-						printVerbose("Type check match: int to int");
-					}
-				} else if (cst.children[2].children[0].contents.name != "IntExpr") {
-					var lineNum = cst.children[0].contents.token.lineNumber;
-					var linePos = cst.children[0].contents.token.linePosition;
-					var tName = cst.children[2].children[0].contents.name;
-					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
-				}
-			}
-		case 'Id':
-			// Handles variable identifiers
-			var parent = cst.parent.contents.name;
-			var value = cst.contents.token.value;
-			var lineNum = cst.contents.token.lineNumber;
-			var linePos = cst.contents.token.linePosition;
-			var idType;
-			
-			// Check id type
-			if (parent = "VarDecl") {
-				idType = cst.parent.children[0].contents.token.value;
-			} else if (!inScope(currentEnvNode, value)) {
-				printOutput("Semantic Error: Undeclared variable '{0}' used  on line {1} character {2}".format(value, lineNum, linePos));
-				return false;
-			} else {
-				idType = getType(currentEnvNode, value);
-				varUsed(currentEnvNode, value);
-			}
-			
-			// Handles variable declaration
-			switch (value) {
-				case 'VarDecl':
-					// If var has not already been declared in this scope, add to current environment node
-					if (currentEnvNode.contents[value] == null) {
-						// Fastest way to deep clone an object
-						var token = JSON.parse(JSON.stringify(cst.contents.token));
-						token.name = value;
-						token.type = idType;
-						token.value = null;
-						currentEnvNode.contents[value] = token;
-						printOutput("Variable declared: {0} {1}".format(idType, value));
-					} else {
-						printOutput("Semantic Error: Variable '{0}' on line {1} character {2} already declared".format(value, lineNum, linePos))
-						return false;
-					}
-				case 'Expr':
-					var expType = cst.parent.parent.contents.name;
-					if (expType == "IntExpr" && idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
-						return false;
-					} else if (expType == "BooleanExpr") {
-						var comparedToken = cst.parent.parent.children[2].children[0];
-						var expectedType = comparedToken.contents.name;
-						if (expectedType == "Id") {
-							expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
-						} else {
-							expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
-						}
-						if (idType != expectedType) {
-							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
-							return false;
-						} else {
-							// For testing purposes
-							printVerbose("Type check match: {0} to {1}".format(idType, expectedType));
-						}
-					}
-				case 'AssignmentStatement':
-					var comparedToken = cst.parent.children[1].children[0];
-					var expectedType = comparedToken.contents.name;
-					if (expectedType == "Id") {
-						expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
-						if (!varInitialized(currentEnvNode, comparedToken.contents.token.value)) {
-							printOutput("Warning: Uninitialized variable '{0}' on line {1} character {2}".format(comparedToken.contents.token.value, lineNum, linePos));
-						}
-					} else {
-						expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
-					}
-					if (idType != expectedType) {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
-						return false;
-					} else {
-						//For testing purposes
-						printVerbose("Type check match: {0} to {1}".format(idType, expectedType));
-						if (currentEnvNode.contents[value] != null) {
-							if (cst.contents[value].initialized == true) {
-								return true;
-							} else {
-								return false;
-							}
-						} else if (currentEnvNode.parent != null) {
-							return varInitialized(cst.parent, value);
-						} else {
-							return false;
-						}
-					}
-				default:
-					break;
-			}
-		default:
-			break;
-		
-		// Recursively analyze down the tree
-		for (var i = 0; i < cst.children.length; i++) {
-			if (!analyzeNode(cst.children[i])) {
-				return false;
-			}
-		}
-		return true;
-	}
-}
-
-/**
  * Recursively builds the symbol table from the environment (scope) tree.
  *
  * @param {Node} environment The environment tree
@@ -298,7 +302,7 @@ function buildSymbolTable(environment) {
 		for (var key in environment.contents) {
 			// Note: hasOwnProperty returns a boolean value based on if the object has the property key
 			if (key != "scopeLevel" && environment.contents.hasOwnProperty(key)) {
-				var token = node.contents[key];
+				var token = environment.contents[key];
 				var used = "";
 				if (token.used == false) {
 					used = "un";
@@ -310,56 +314,109 @@ function buildSymbolTable(environment) {
 	}
 	
 	if (environment.children != null) {
-		for (var i = 0; i < node.children.length; i++) {
-			buildSymbolTable(node.children[i]);
+		for (var i = 0; i < environment.children.length; i++) {
+			buildSymbolTable(environment.children[i]);
 		}
 	}
 }
 
-function getScope(node) {
-	if (node.parent.contents == "Environment") {
+/**
+ * Helper function to get the scope of a specified node.
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @return {String} Scope list from specified node to root
+ */
+function getScope(enviroNode) {
+	if (enviroNode.parent.contents == "Environment") {
 		// Base scope
 		return "1";
 	} else {
 		// Recursively get parent scope and append
-		return getScope(node.parent) + "." + node.contents["scopeLevel"];
+		return getScope(enviroNode.parent) + "." + enviroNode.contents["scopeLevel"];
 	}
 }
 
-function getType(node, c) {
-	if (node.contents[c] != null) {
-		return node.contents[c].type;
-	} else if (node.parent != null) {
-		return getType(node.parent, c);
+/**
+ * Helper function to get the type of the specified node.
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @param {String} v Variable of which we are getting the type of
+ * @return Type, or if unavailable, type of var in node's parent; otherwise false
+ */
+function getType(enviroNode, v) {
+	if (enviroNode.contents[v] != null) {
+		return enviroNode.contents[v].type;
+	} else if (enviroNode.parent != null) {
+		return getType(enviroNode.parent, v);
 	} else {
 		return false;
 	}
 }
 
-function inScope(node, c) {
-	if (node.contents[c] != null) {
+/**
+ * Helper function to check the scope in which the specified node is in.
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @param {String} v Variable of which we are checking the scope of
+ * @return true if scope is correct, false otherwise; recursively checks up scope tree
+ */
+function inScope(enviroNode, v) {
+	if (enviroNode.contents[v] != null) {
 		return true;
-	} else if (node.parent != null) {
-		return inScope(node.parent, sc);
+	} else if (enviroNode.parent != null) {
+		return inScope(enviroNode.parent, v);
 	} else {
 		return false;
 	}
 }
 
-function varUsed(node, c) {
-	if (node.contents[c] != null) {
-		node.contents[c].used = true;
-		printOutput("Variable {0} detected as used. Declared in scope {1}".format(c, node.contents["scopeLevel"]));
-	} else if (node.parent != null) {
-		varUsed(node.parent, c);
+/**
+ * Helper function to check if a variable has been initialized.
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @param {String} v Variable of which we are checking initialization status
+ * @return true if initialized, false otherwise; recursively checks up scope tree
+ */
+function isInitialized(enviroNode, v) {
+	if (enviroNode.contents[v] != null) {
+		if (enviroNode.contents[v].initialized == true) {
+			return true;
+		} else {
+			return false;
+		}
+	} else if (enviroNode.parent != null) {
+		return isInitialized(enviroNode.parent, v);
+	} else {
+		return false;
 	}
 }
 
-function varInitialized(node, c) {
-	if (node.contents[c] != null) {
-		node.contents[c].initialized = true;
-		printOutput("Variable {0} initialized. Declared in scope {1}".format(c, node.contents["scopeLevel"]));
-	} else if (node.parent != null) {
-		varInitialized(node.parent, c);
+/**
+ * Helper function to tag a variable as used (unused variables throw warnings).
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @param {String} v Variable being tagged as used
+ */
+function varUsed(enviroNode, v) {
+	if (enviroNode.contents[v] != null) {
+		enviroNode.contents[v].used = true;
+		printOutput("Variable '{0}' used; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
+	} else if (enviroNode.parent != null) {
+		varUsed(enviroNode.parent, v);
+	}
+}
+
+/**
+ * Helper function to tag a variable as initialized (uninitialized variables throw warnings).
+ *
+ * @param {Node} enviroNode Environment node; used to determine scope and type
+ * @param {String} v Variable being tagged as initialized
+ */
+function varInitialized(enviroNode, v) {
+	if (enviroNode.contents[v] != null) {
+		enviroNode.contents[v].initialized = true;
+		printOutput("Variable '{0}' initialized; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
+	} else if (enviroNode.parent != null) {
+		varInitialized(enviroNode.parent, v);
 	}
 }
