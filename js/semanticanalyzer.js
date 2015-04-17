@@ -16,15 +16,18 @@ function analyzer() {
 	printOutput("Starting scope and type check...");
 	success = analyzeNode(cst);
 	if (success) {
-		printOutput("Scope and type check success!");
+		printOutput("Scope and type check success!<hr />");
+		printOutput("Symbol Table:");
 		symbolTable = "";
 		buildSymbolTable(environ);
 		if (symbolTable != "") {
 			printOutput(symbolTable);
 		}
+		printOutput("<hr />");
 		ast = new Node();
-		ast.contents = "ast";
+		ast.contents = { name:"AST" };
 		currentASTNode = ast;
+		// Insert the first child of the node "CST", which is "Program"
 		buildAST(cst.children[0]);
 		indentLevel = -1;
 		// The <pre> HTML tag defines preformatted text
@@ -43,7 +46,7 @@ function analyzer() {
  */
 function analyzeNode(cst) {
 	if (DEBUG) {
-		printOutput(cst.contents.name);
+		printOutput("*DEBUG MODE* Current CST node contents: " + cst.contents.name);
 	}
 	
 	switch (cst.contents.name) {
@@ -78,7 +81,7 @@ function analyzeNode(cst) {
 					}
 					
 					if (idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, value, idType));
 						return false;
 					} else {
 						printOutput("Type check match: int to int");
@@ -90,7 +93,7 @@ function analyzeNode(cst) {
 					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
 					return false;
 				} else {
-					printOutput("Type check match: int to int");
+					printOutput("Type check match: '{0}' to 'int'".format(idType));
 				}
 			}
 			break;
@@ -106,7 +109,7 @@ function analyzeNode(cst) {
 			if (parent == "VarDecl") {
 				idType = cst.parent.children[0].contents.token.value;
 			} else if (!inScope(currentEnvNode, value)) {
-				printOutput("Semantic Error: Undeclared variable '{0}' used  on line {1} character {2}".format(value, lineNum, linePos));
+				printOutput("Semantic Error: Undeclared variable '{0}' used on line {1} character {2}".format(value, lineNum, linePos));
 				return false;
 			} else {
 				idType = getType(currentEnvNode, value);
@@ -133,11 +136,10 @@ function analyzeNode(cst) {
 				case 'Expr':
 					var expType = cst.parent.parent.contents.name;
 					if (expType == "IntExpr" && idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be 'int', got {3}".format(lineNum, linePos, value, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, value, idType));
 						return false;
 					} else if (expType == "BooleanExpr") {
-						printOutput(cst.contents.name);
-						var comparedToken = cst.parent.parent.children[2].children[0];
+						var comparedToken = cst.parent.children[2].children[0];
 						var expectedType = comparedToken.contents.name;
 						if (expectedType == "Id") {
 							expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
@@ -145,10 +147,10 @@ function analyzeNode(cst) {
 							expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
 						}
 						if (idType != expectedType) {
-							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
 							return false;
 						} else {
-							printOutput("Type check match: {0} to {1}".format(idType, expectedType));
+							printOutput("Type check match: '{0}' to '{1}'".format(idType, expectedType));
 						}
 					}
 					break;
@@ -164,10 +166,10 @@ function analyzeNode(cst) {
 						expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
 					}
 					if (idType != expectedType) {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected {2} to be {3}, got {4}".format(lineNum, linePos, value, expectedType, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
 						return false;
 					} else {
-						printOutput("Type check match: {0} to {1}".format(idType, expectedType));
+						printOutput("Type check match: '{0}' to '{1}'".format(idType, expectedType));
 						varInitialized(currentEnvNode, value);
 					}
 					break;
@@ -227,16 +229,18 @@ function buildAST(node) {
 					nodeContents = node.contents.token.value;
 				}
 				
-				astNode.contents = [];
-				astNode.contents.name = nodeContents;
+				astNode.contents = { name: nodeContents };
+				//printOutput(nodeContents);
+				printOutput(currentASTNode.contents.name);
 				astNode.parent = currentASTNode;
 				currentASTNode.children.push(astNode);
 				currentASTNode = astNode;
 			} else {
 				// Create and insert new AST branch node
 				var astNode = new Node();
-				astNode.contents = [];
-				astNode.contents.name = node.contents.name;
+				astNode.contents = { name: node.contents.name };
+				//printOutput(node.contents.name);
+				printOutput(currentASTNode.contents.name);
 				astNode.parent = currentASTNode;
 				currentASTNode.children.push(astNode);
 				currentASTNode = astNode;
@@ -249,14 +253,14 @@ function buildAST(node) {
 		currentASTNode = currentASTNode.parent;
 	}
 	
-	// Reached branch node or Block node or Print node, return to parent
-	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && build == true) {
-		currentASTNode = currentASTNode.parent;
-	}
-	
 	// Recursively build AST to all available child nodes
 	for (var i = 0; i < node.children.length; i++) {
 		buildAST(node.children[i]);
+	}
+	
+	// Reached branch node or Block node or Print node, return to parent
+	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && build == true) {
+		currentASTNode = currentASTNode.parent;
 	}
 }
 
@@ -306,9 +310,9 @@ function buildSymbolTable(environment) {
 				var used = "";
 				if (token.used == false) {
 					used = "un";
-					symbolTable += "Warning: Unused variable {0} on line {1} character {2}<br />".format(token.name, token.lineNumber, token.linePosition);
+					symbolTable += "Warning: Unused variable '{0}' on line {1} character {2}<br />".format(token.name, token.lineNumber, token.linePosition);
 				}
-				printOutput("{0}: {1} on line {2} character {3} in scope {4} status: {5}used".format(token.name, token.lineNumber, token.linePosition, getScope(environment), used));
+				printOutput("{0}: type {1} on line {2} character {3} in scope {4}. Status: {5}used".format(token.name, token.type, token.lineNumber, token.linePosition, getScope(environment), used));
 			}
 		}
 	}

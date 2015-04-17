@@ -10,7 +10,7 @@ var panic;
  */
 function parser() {
 	cst = new Node();
-	cst.contents = "cst";
+	cst.contents = { name:"CST" };
 	currentCSTNode = cst;
 	indentLevel = -1;
 	tokenIndex = 0;
@@ -75,7 +75,7 @@ function branchNode(n) {
 	var node = new Node();
 	
 	if (DEBUG) {
-		printOutput(currentToken.type.substr(2) + " | " + n + " BRANCHNODE");
+		printOutput("*DEBUG MODE* " + currentToken.type.substr(2) + " | " + n + " BRANCHNODE");
 	}
 	
 	// Fill contents with value n as name
@@ -103,7 +103,7 @@ function leafNode(n) {
 	var node = new Node();
 	
 	if (DEBUG) {
-		printOutput(currentToken.type.substr(2) + " | " + n + " | " + currentToken.value + " LEAFNODE");
+		printOutput("*DEBUG MODE* " + currentToken.type.substr(2) + " | " + n + " | " + currentToken.value + " LEAFNODE");
 	}
 	
 	// For leaf nodes, store token as well as name
