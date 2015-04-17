@@ -211,38 +211,33 @@ function newNode(contents) {
 function buildAST(node) {
 	var string;
 	var build = false;
-	//printOutput(node.contents.name);
 	// Some type of statement (print, while, if, etc.)
-	if ((node.contents.name.indexOf("Statement") > 0) || 
+	if (((node.contents.name.indexOf("Statement") > 0) || 
 		// Non-statement or node with multiple children
 		(node.children.length != 1 && node.contents.name.indexOf("Statement") == -1) ||
 		// Opening statement - Program
 		(node.contents.name == "Program") ||
 		// Opening statement - Block
-		(node.contents.name == "Block")) {
+		(node.contents.name == "Block")) && 
+		(node.contents.name != "Char") &&
+		(node.contents.name != "CharList")) {
 			if (node.children.length == 0) {
 				// Create and insert new AST leaf node
 				var astNode = new Node();
 				var nodeContents;
 				
-				//printOutput(node.contents.name);
 				if (node.contents.name == "String") {
-					nodeContents = '"{0}"'.format(node.contents.token.value);
-					insertASTNode(nodeContents);
+					nodeContents = '| "{0}"'.format(node.contents.token.value);
 				} else if (node.contents.name == "Intop") {
 					nodeContents = "+";
-					insertASTNode(nodeContents);
-				} else if (node.contents.name == "CharList") {
-					// Ignore CharList; use String to print entire CharList to AST
 				} else {
 					nodeContents = node.contents.token.value;
-					insertASTNode(nodeContents);
 				}
+				
+				insertASTNode(nodeContents);
 			} else {
 				// Create and insert new AST branch node
-				if (node.contents.name != "CharList") {
-					insertASTNode(node.contents.name);
-				}
+				insertASTNode(node.contents.name);
 			}
 		build = true;
 	}
@@ -253,12 +248,12 @@ function buildAST(node) {
 	}
 	
 	// Reached leaf node and current AST node not Block, return to parent
-	if (node.children.length == 0 && currentASTNode.contents.name != "Block") {
+	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && node.contents.name != "Char") {
 		currentASTNode = currentASTNode.parent;
 	}
 	
 	// Reached branch node or Block node or Print node, return to parent
-	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && build == true && node.contents.name != "CharList") {
+	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && node.contents.name != "CharList" && build == true) {
 		currentASTNode = currentASTNode.parent;
 	}
 }
