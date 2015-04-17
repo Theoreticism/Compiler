@@ -211,7 +211,7 @@ function newNode(contents) {
 function buildAST(node) {
 	var string;
 	var build = false;
-	printOutput(node.contents.name);
+	//printOutput(node.contents.name);
 	// Some type of statement (print, while, if, etc.)
 	if ((node.contents.name.indexOf("Statement") > 0) || 
 		// Non-statement or node with multiple children
