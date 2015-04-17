@@ -20,7 +20,8 @@ var tokens = {
 	T_Id: "T_Id",           // [a-Z]
 	T_Digit: "T_Digit",     // [0-9]
 	T_Space: "T_Space",     // \s (whitespace metacharacter)
-	T_Char: "T_Char"        // a-Z
+	T_Char: "T_Char",       // a-Z
+	T_String: "T_String"    // string aka charlist
 
 };
 
@@ -50,6 +51,8 @@ function lexer() {
 	var linePosition = 1;
 	var inString = false; //check if we are in string
 	var tokenized = false; //check if we have already created a token
+	var charListify = false; // check if we need to fill a CharList
+	var charList = ""; // stores CharList value
 	textBuffer.clear();
 	for (index = 0; index < source.length; index++) {
 		var currentChar = source[index];
@@ -161,9 +164,27 @@ function lexer() {
 		
 		// Matching in string, lowercase alphabetic character
 		if (currentChar.match(/[a-z]/) && inString && !tokenized) {
+			var nextChar = source[index+1];
+			var prevChar = source[index-1];
+			
+			// Tokenize single char value
 			makeToken(tokens.T_Char, lineNumber, linePosition, currentChar);
 			printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Char, currentChar));
 			tokenized = true;
+			
+			// Tokenize entire string (CharList) value
+			if (prevChar.match(/"/) && charListify == false) {
+				charListify = true;
+				charList += currentChar;
+			} else if (nextChar.match(/"/) && charListify == true) {
+				charListify = false;
+				charList += currentChar;
+				makeToken(tokens.T_String, lineNumber, linePosition, charList);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_String, charList));
+				charList = "";
+			} else {
+				charList += currentChar;
+			}
 		}
 		
 		// Input after end of file ignored

@@ -364,8 +364,13 @@ function parseIntExpr() {
  */
 function parseStringExpr() {
 	if (!panic) {
+		var node = new Node();
 		checkToken("T_Quote");
 		branchNode("CharList");
+		node.contents = { name: "String", token: currentToken };
+		node.parent = currentCSTNode;
+		currentCSTNode.children.push(node);
+		checkToken("T_String");
 		checkToken("T_Quote");
 		returnToParent();
 	}

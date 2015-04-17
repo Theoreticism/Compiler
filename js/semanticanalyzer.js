@@ -209,53 +209,53 @@ function newNode(contents) {
  * @param {Node} node The node being analyzed
  */
 function buildAST(node) {
+	var string;
 	var build = false;
+	printOutput(node.contents.name);
 	// Some type of statement (print, while, if, etc.)
 	if ((node.contents.name.indexOf("Statement") > 0) || 
-		// Non-statement or leaf node or node with multiple children
+		// Non-statement or node with multiple children
 		(node.children.length != 1 && node.contents.name.indexOf("Statement") == -1) ||
+		// Opening statement - Program
+		(node.contents.name == "Program") ||
 		// Opening statement - Block
 		(node.contents.name == "Block")) {
-			if (node.children.length == 0) {
+			if (node.children.length == 0 && node.contents.name != "CharList") {
 				// Create and insert new AST leaf node
 				var astNode = new Node();
 				var nodeContents;
 				
-				if (node.contents.name == "CharList") {
+				//printOutput(node.contents.name);
+				if (node.contents.name == "String") {
 					nodeContents = '"{0}"'.format(node.contents.token.value);
+					insertASTNode(nodeContents);
 				} else if (node.contents.name == "Intop") {
 					nodeContents = "+";
+					insertASTNode(nodeContents);
 				} else {
 					nodeContents = node.contents.token.value;
+					insertASTNode(nodeContents);
 				}
 				
-				astNode.contents = { name: nodeContents };
-				//printOutput(nodeContents);
-				printOutput(currentASTNode.contents.name);
-				astNode.parent = currentASTNode;
-				currentASTNode.children.push(astNode);
-				currentASTNode = astNode;
+				//printOutput(node.contents.name);
+				//printOutput(currentASTNode.contents.name);
 			} else {
 				// Create and insert new AST branch node
-				var astNode = new Node();
-				astNode.contents = { name: node.contents.name };
+				insertASTNode(node.contents.name);
 				//printOutput(node.contents.name);
-				printOutput(currentASTNode.contents.name);
-				astNode.parent = currentASTNode;
-				currentASTNode.children.push(astNode);
-				currentASTNode = astNode;
+				//printOutput(currentASTNode.contents.name);
 			}
 		build = true;
-	}
-	
-	// Reached leaf node and current AST node not Block, return to parent
-	if (node.children.length == 0 && currentASTNode.contents.name != "Block") {
-		currentASTNode = currentASTNode.parent;
 	}
 	
 	// Recursively build AST to all available child nodes
 	for (var i = 0; i < node.children.length; i++) {
 		buildAST(node.children[i]);
+	}
+	
+	// Reached leaf node and current AST node not Block, return to parent
+	if (node.children.length == 0 && currentASTNode.contents.name != "Block") {
+		currentASTNode = currentASTNode.parent;
 	}
 	
 	// Reached branch node or Block node or Print node, return to parent
@@ -291,9 +291,25 @@ function printAST(ast) {
 function printASTNode(n) {
 	var t = n.name;
 	if (indentLevel > 0) {
-		t = "|" + t;
+		for (var i = 0; i < indentLevel; i++) {
+			t = "| " + t;
+		}
 	}
 	return t + "\n";
+}
+
+/**
+ * Helper function that inserts a new AST node.
+ *
+ * @param {String} name Name of the AST node
+ */
+function insertASTNode(name) {
+	var node = new Node();
+	node.contents = [];
+	node.contents.name = name;
+	node.parent = currentASTNode;
+	currentASTNode.children.push(node);
+	currentASTNode = node;
 }
 
 /**
