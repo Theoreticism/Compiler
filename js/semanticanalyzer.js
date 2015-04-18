@@ -258,7 +258,9 @@ function buildAST(node) {
 	
 	// Reached branch node or Block node or Print node, return to parent
 	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && node.contents.name != "CharList" && build == true) {
-		currentASTNode = currentASTNode.parent;
+		if (currentASTNode != null) {
+			currentASTNode = currentASTNode.parent;
+		}
 	}
 }
 
