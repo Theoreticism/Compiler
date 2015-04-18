@@ -16,7 +16,7 @@ function analyzer() {
 	printOutput("Starting scope and type check...");
 	success = analyzeNode(cst);
 	if (success) {
-		printOutput("Scope and type check success!<hr />");
+		printOutput("Scope and type check successful!<hr />");
 		printOutput("Symbol Table:");
 		symbolTable = "";
 		buildSymbolTable(environ);
@@ -58,12 +58,12 @@ function analyzeNode(cst) {
 			enviroNode.parent = currentEnvNode;
 			currentEnvNode.children.push(enviroNode);
 			currentEnvNode = enviroNode;
-			printOutput("Opening scope {0}".format(getScope(currentEnvNode)));
+			printVerbose("Opening scope {0}".format(getScope(currentEnvNode)));
 			break;
 		case 'StatementList':
 			// StatementList with no children signifies end of Block
 			if (cst.children.length == 0) {
-				printOutput("Closing scope {0}".format(getScope(currentEnvNode)));
+				printVerbose("Closing scope {0}".format(getScope(currentEnvNode)));
 				currentEnvNode = currentEnvNode.parent;
 			}
 			break;
@@ -84,7 +84,7 @@ function analyzeNode(cst) {
 						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, value, idType));
 						return false;
 					} else {
-						printOutput("Type check match: int to int");
+						printVerbose("Type check match: int to int");
 					}
 				} else if (cst.children[2].children[0].contents.name != "IntExpr") {
 					var lineNum = cst.children[0].contents.token.lineNumber;
@@ -93,7 +93,7 @@ function analyzeNode(cst) {
 					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
 					return false;
 				} else {
-					printOutput("Type check match: '{0}' to 'int'".format(idType));
+					printVerbose("Type check match: '{0}' to 'int'".format(idType));
 				}
 			}
 			break;
@@ -127,7 +127,7 @@ function analyzeNode(cst) {
 						token.type = idType;
 						token.value = null;
 						currentEnvNode.contents[value] = token;
-						printOutput("Variable declared: '{0}' of type {1}".format(value, idType));
+						printVerbose("Variable declared: '{0}' of type {1}".format(value, idType));
 					} else {
 						printOutput("Semantic Error: Variable '{0}' on line {1} character {2} already declared".format(value, lineNum, linePos))
 						return false;
@@ -150,7 +150,7 @@ function analyzeNode(cst) {
 							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
 							return false;
 						} else {
-							printOutput("Type check match: '{0}' to '{1}'".format(idType, expectedType));
+							printVerbose("Type check match: '{0}' to '{1}'".format(idType, expectedType));
 						}
 					}
 					break;
@@ -169,7 +169,7 @@ function analyzeNode(cst) {
 						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
 						return false;
 					} else {
-						printOutput("Type check match: '{0}' to '{1}'".format(idType, expectedType));
+						printVerbose("Type check match: '{0}' to '{1}'".format(idType, expectedType));
 						varInitialized(currentEnvNode, value);
 					}
 					break;
@@ -237,7 +237,11 @@ function buildAST(node) {
 				insertASTNode(nodeContents);
 			} else {
 				// Create and insert new AST branch node
-				insertASTNode(node.contents.name);
+				if (node.contents.name == "Expr") {
+					insertASTNode("BooleanExpr");
+				} else {
+					insertASTNode(node.contents.name);
+				}
 			}
 		build = true;
 	}
@@ -414,7 +418,7 @@ function isInitialized(enviroNode, v) {
 function varUsed(enviroNode, v) {
 	if (enviroNode.contents[v] != null) {
 		enviroNode.contents[v].used = true;
-		printOutput("Variable '{0}' used; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
+		printVerbose("Variable '{0}' used; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
 	} else if (enviroNode.parent != null) {
 		varUsed(enviroNode.parent, v);
 	}
@@ -429,7 +433,7 @@ function varUsed(enviroNode, v) {
 function varInitialized(enviroNode, v) {
 	if (enviroNode.contents[v] != null) {
 		enviroNode.contents[v].initialized = true;
-		printOutput("Variable '{0}' initialized; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
+		printVerbose("Variable '{0}' initialized; declared in scope {1}".format(v, enviroNode.contents["scopeLevel"]));
 	} else if (enviroNode.parent != null) {
 		varInitialized(enviroNode.parent, v);
 	}

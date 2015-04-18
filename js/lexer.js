@@ -73,10 +73,29 @@ function lexer() {
 		
 		// Matching whitespace
 		if (currentChar.match(/\s/)) {
+			var nextChar = source[index+1];
+			var prevChar = source[index-1];
+			
 			if (inString) {
 				makeToken(tokens.T_Space, lineNumber, linePosition, currentChar);
 				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_Space, currentChar));
 				tokenized = true;
+				
+				if (prevChar.match(/"/) && nextChar.match(/"/)) {
+					makeToken(tokens.T_String, lineNumber, linePosition, currentChar);
+					printVerbose("Identified token: {0} from '{1}'".format(tokens.T_String, charList));
+				} else if (prevChar.match(/"/) && charListify == false) {
+					charListify = true;
+					charList += currentChar;
+				} else if (nextChar.match(/"/) && charListify == true) {
+					charListify = false;
+					charList += currentChar;
+					makeToken(tokens.T_String, lineNumber, linePosition, charList);
+					printVerbose("Identified token: {0} from '{1}'".format(tokens.T_String, charList));
+					charList = "";
+				} else if (charListify == true) {
+					charList += currentChar;
+				}
 			} else if (!idToken(lineNumber, linePosition, textBuffer.get())) {
 				printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length));
 				return;
@@ -173,7 +192,10 @@ function lexer() {
 			tokenized = true;
 			
 			// Tokenize entire string (CharList) value
-			if (prevChar.match(/"/) && charListify == false) {
+			if (prevChar.match(/"/) && nextChar.match(/"/)) {
+				makeToken(tokens.T_String, lineNumber, linePosition, currentChar);
+				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_String, charList));
+			} else if (prevChar.match(/"/) && charListify == false) {
 				charListify = true;
 				charList += currentChar;
 			} else if (nextChar.match(/"/) && charListify == true) {
@@ -182,7 +204,7 @@ function lexer() {
 				makeToken(tokens.T_String, lineNumber, linePosition, charList);
 				printVerbose("Identified token: {0} from '{1}'".format(tokens.T_String, charList));
 				charList = "";
-			} else {
+			} else if (charListify == true) {
 				charList += currentChar;
 			}
 		}

@@ -370,8 +370,10 @@ function parseStringExpr() {
 		node.contents = { name: "String", token: currentToken };
 		node.parent = currentCSTNode;
 		currentCSTNode.children.push(node);
+		currentCSTNode = node;
 		checkToken("T_String");
 		checkToken("T_Quote");
+		returnToParent();
 		returnToParent();
 	}
 }
