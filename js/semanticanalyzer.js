@@ -219,8 +219,10 @@ function buildAST(node) {
 		(node.contents.name == "Program") ||
 		// Opening statement - Block
 		(node.contents.name == "Block")) && 
+		// Remove charlist, chars and whitespace; use String for AST instead
 		(node.contents.name != "Char") &&
-		(node.contents.name != "CharList")) {
+		(node.contents.name != "CharList") &&
+		(node.contents.name != "Space")) {
 			if (node.children.length == 0) {
 				// Create and insert new AST leaf node
 				var astNode = new Node();
@@ -252,11 +254,11 @@ function buildAST(node) {
 	}
 	
 	// Reached leaf node and current AST node not Block, return to parent
-	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && node.contents.name != "Char") {
+	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && node.contents.name != "Char" && node.contents.name != "Space") {
 		currentASTNode = currentASTNode.parent;
 	}
 	
-	// Reached branch node or Block node or Print node, return to parent
+	// Reached branch node or Block node or Print node, return to parent if not null
 	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && node.contents.name != "CharList" && build == true) {
 		if (currentASTNode != null) {
 			currentASTNode = currentASTNode.parent;
