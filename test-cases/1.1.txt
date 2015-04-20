@@ -1,0 +1,242 @@
+Test Case 1.1
+
+Code:
+
+{
+	int a
+	a = 1
+	{
+		int a
+		a = 2
+		print(a)
+	}
+	string b
+	b = "alan"
+	if(a == 1) {
+		print(b)
+	}
+	string c
+	c = "james"
+	b = "blackstone"
+	print(b)
+} $    
+			
+
+Output (Semantic Analysis only):
+Analyzing semantics...
+Starting scope and type check...
+Opening scope 1
+Variable declared: 'a' of type int
+Variable 'a' used; declared in scope 1
+Type check match: 'int' to 'int'
+Variable 'a' initialized; declared in scope 1
+Opening scope 1.1
+Variable declared: 'a' of type int
+Variable 'a' used; declared in scope 1
+Type check match: 'int' to 'int'
+Variable 'a' initialized; declared in scope 1
+Variable 'a' used; declared in scope 1
+Closing scope 1.1
+Variable declared: 'b' of type string
+Variable 'b' used; declared in scope 1
+Type check match: 'string' to 'string'
+Variable 'b' initialized; declared in scope 1
+Variable 'a' used; declared in scope 1
+Type check match: 'int' to 'int'
+Opening scope 1.2
+Variable 'b' used; declared in scope 1
+Closing scope 1.2
+Variable declared: 'c' of type string
+Variable 'c' used; declared in scope 1
+Type check match: 'string' to 'string'
+Variable 'c' initialized; declared in scope 1
+Variable 'b' used; declared in scope 1
+Type check match: 'string' to 'string'
+Variable 'b' initialized; declared in scope 1
+Variable 'b' used; declared in scope 1
+Closing scope 1
+Scope and type check successful!
+
+Symbol Table:
+a: type int on line 2 character 8 in scope 1. Status: used
+b: type string on line 9 character 11 in scope 1. Status: used
+c: type string on line 14 character 11 in scope 1. Status: used
+a: type int on line 5 character 9 in scope 1.1. Status: used
+
+Semantic analysis successful!
+
+Concrete Syntax Tree
+Program
+| Block
+| | StatementList
+| | | Statement
+| | | | VarDecl
+| | | | | Type(int)
+| | | | | Id(a)
+| | | | StatementList
+| | | | | Statement
+| | | | | | AssignmentStatement
+| | | | | | | Id(a)
+| | | | | | | Expr
+| | | | | | | | IntExpr
+| | | | | | | | | Digit(1)
+| | | | | | StatementList
+| | | | | | | Statement
+| | | | | | | | Block
+| | | | | | | | | StatementList
+| | | | | | | | | | Statement
+| | | | | | | | | | | VarDecl
+| | | | | | | | | | | | Type(int)
+| | | | | | | | | | | | Id(a)
+| | | | | | | | | | | StatementList
+| | | | | | | | | | | | Statement
+| | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | Id(a)
+| | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | IntExpr
+| | | | | | | | | | | | | | | | Digit(2)
+| | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | Id(a)
+| | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | StatementList
+| | | | | | | | | | | | Statement
+| | | | | | | | | | | | | VarDecl
+| | | | | | | | | | | | | | Type(string)
+| | | | | | | | | | | | | | Id(b)
+| | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | | | Id(b)
+| | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | Char(a)
+| | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | Char(a)
+| | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | String(alan)
+| | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | IfStatement
+| | | | | | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | Id(a)
+| | | | | | | | | | | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | IntExpr
+| | | | | | | | | | | | | | | | | | | | | | Digit(1)
+| | | | | | | | | | | | | | | | | | | | Block
+| | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | Id(b)
+| | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | VarDecl
+| | | | | | | | | | | | | | | | | | | | | | | Type(string)
+| | | | | | | | | | | | | | | | | | | | | | | Id(c)
+| | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | Id(c)
+| | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(j)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(a)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(m)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(e)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(s)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | String(james)
+| | | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Id(b)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(b)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(a)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(c)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(k)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(s)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(t)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(e)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | String(blackstone)
+| | | | | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Id(b)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | StatementList
+
+Abstract Syntax Tree
+Program
+| Block
+| | VarDecl
+| | | int
+| | | a
+| | AssignmentStatement
+| | | a
+| | | 1
+| | Block
+| | | VarDecl
+| | | | int
+| | | | a
+| | | AssignmentStatement
+| | | | a
+| | | | 2
+| | | PrintStatement
+| | | | a
+| | | VarDecl
+| | | | string
+| | | | b
+| | | AssignmentStatement
+| | | | b
+| | | | "alan"
+| | IfStatement
+| | | BooleanExpr
+| | | | a
+| | | | ==
+| | | | 1
+| | | | Block
+| | | | | PrintStatement
+| | | | | | b
+| | | | VarDecl
+| | | | | string
+| | | | | c
+| | | | AssignmentStatement
+| | | | | c
+| | | | | "james"
+| | | AssignmentStatement
+| | | | b
+| | | | "blackstone"
+| | PrintStatement
+| | | b

@@ -1,0 +1,236 @@
+Test Case 4.1
+
+Code:
+
+{
+    boolean a
+    a = true
+    
+    if (a == true) {
+        print("it works")
+    }
+    
+    if true {
+        print("control block")
+    }
+
+    a = false
+    
+    if(a == true) {
+        print("should not print")
+    }
+}$
+
+Output (Semantic Analysis only):
+Analyzing semantics...
+Starting scope and type check...
+Opening scope 1
+Variable declared: 'a' of type boolean
+Variable 'a' used; declared in scope 1
+Type check match: 'boolean' to 'boolean'
+Variable 'a' initialized; declared in scope 1
+Variable 'a' used; declared in scope 1
+Type check match: 'boolean' to 'boolean'
+Opening scope 1.1
+Closing scope 1.1
+Opening scope 1.2
+Closing scope 1.2
+Variable 'a' used; declared in scope 1
+Type check match: 'boolean' to 'boolean'
+Variable 'a' initialized; declared in scope 1
+Variable 'a' used; declared in scope 1
+Type check match: 'boolean' to 'boolean'
+Opening scope 1.3
+Closing scope 1.3
+Closing scope 1
+Scope and type check successful!
+
+Symbol Table:
+a: type boolean on line 2 character 15 in scope 1. Status: used
+
+Semantic analysis successful!
+
+Concrete Syntax Tree
+Program
+| Block
+| | StatementList
+| | | Statement
+| | | | VarDecl
+| | | | | Type(boolean)
+| | | | | Id(a)
+| | | | StatementList
+| | | | | Statement
+| | | | | | AssignmentStatement
+| | | | | | | Id(a)
+| | | | | | | Expr
+| | | | | | | | BooleanExpr
+| | | | | | | | | Boolval(true)
+| | | | | | StatementList
+| | | | | | | Statement
+| | | | | | | | IfStatement
+| | | | | | | | | BooleanExpr
+| | | | | | | | | | Expr
+| | | | | | | | | | | Id(a)
+| | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | Expr
+| | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | Boolval(true)
+| | | | | | | | | | | Block
+| | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | Char(i)
+| | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | Char(t)
+| | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | Char(w)
+| | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | Char(r)
+| | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | Char(k)
+| | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | Char(s)
+| | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | String(it works)
+| | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | StatementList
+| | | | | | | | | | | | Statement
+| | | | | | | | | | | | | IfStatement
+| | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | Boolval(true)
+| | | | | | | | | | | | | | | Block
+| | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | Char(c)
+| | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | Char(t)
+| | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | Char(r)
+| | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(b)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(c)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(k)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | String(control block)
+| | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | | | | | Id(a)
+| | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | | | | | | Boolval(false)
+| | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | IfStatement
+| | | | | | | | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | Id(a)
+| | | | | | | | | | | | | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | | | | | | | | | | Boolval(true)
+| | | | | | | | | | | | | | | | | | | | | | Block
+| | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(s)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(h)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(u)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(d)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(t)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(p)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(r)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(i)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(t)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | String(should not print)
+| | | | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | StatementList
+
+Abstract Syntax Tree
+Program
+| Block
+| | VarDecl
+| | | boolean
+| | | a
+| | AssignmentStatement
+| | | a
+| | | true
+| | IfStatement
+| | | BooleanExpr
+| | | | a
+| | | | ==
+| | | | true
+| | | | Block
+| | | | | PrintStatement
+| | | | | | "it works"
+| | IfStatement
+| | | BooleanExpr
+| | | | true
+| | | | Block
+| | | | | PrintStatement
+| | | | | | "control block"
+| | AssignmentStatement
+| | | a
+| | | false
+| | IfStatement
+| | | BooleanExpr
+| | | | a
+| | | | ==
+| | | | true
+| | | | Block
+| | | | | PrintStatement
+| | | | | | "should not print"

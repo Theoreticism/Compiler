@@ -1,0 +1,193 @@
+Test Case 3.1
+
+Code:
+
+{
+	int i
+	i = 1
+	while((i == 8) == false) {
+		if(i == 1) {
+			print("begin ")
+		}
+		print("loop ")
+		print(i)
+		print(" ")
+		i = 1 + i
+	}
+} $
+
+Output (Semantic Analysis only):
+Analyzing semantics...
+Starting scope and type check...
+Opening scope 1
+Variable declared: 'i' of type int
+Variable 'i' used; declared in scope 1
+Type check match: 'int' to 'int'
+Variable 'i' initialized; declared in scope 1
+Variable 'i' used; declared in scope 1
+Type check match: 'int' to 'int'
+Opening scope 1.1
+Variable 'i' used; declared in scope 1
+Type check match: 'int' to 'int'
+Opening scope 1.1.1
+Closing scope 1.1.1
+Variable 'i' used; declared in scope 1
+Variable 'i' used; declared in scope 1
+Type check match: 'int' to 'int'
+Variable 'i' initialized; declared in scope 1
+Type check match: int to int
+Variable 'i' used; declared in scope 1
+Closing scope 1.1
+Closing scope 1
+Scope and type check successful!
+
+Symbol Table:
+i: type int on line 2 character 8 in scope 1. Status: used
+
+Semantic analysis successful!
+
+Concrete Syntax Tree
+Program
+| Block
+| | StatementList
+| | | Statement
+| | | | VarDecl
+| | | | | Type(int)
+| | | | | Id(i)
+| | | | StatementList
+| | | | | Statement
+| | | | | | AssignmentStatement
+| | | | | | | Id(i)
+| | | | | | | Expr
+| | | | | | | | IntExpr
+| | | | | | | | | Digit(1)
+| | | | | | StatementList
+| | | | | | | Statement
+| | | | | | | | WhileStatement
+| | | | | | | | | BooleanExpr
+| | | | | | | | | | Expr
+| | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | Expr
+| | | | | | | | | | | | | Id(i)
+| | | | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | IntExpr
+| | | | | | | | | | | | | | | Digit(8)
+| | | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | | Expr
+| | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | Boolval(false)
+| | | | | | | | | | | | Block
+| | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | IfStatement
+| | | | | | | | | | | | | | | | BooleanExpr
+| | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | Id(i)
+| | | | | | | | | | | | | | | | | | Boolop(==)
+| | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | IntExpr
+| | | | | | | | | | | | | | | | | | | | Digit(1)
+| | | | | | | | | | | | | | | | | | Block
+| | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | Char(b)
+| | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | Char(e)
+| | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Char(g)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(i)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Char(n)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | String(begin )
+| | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | Char(l)
+| | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | Char(o)
+| | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Char(p)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | String(loop )
+| | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | Id(i)
+| | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | PrintStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | StringExpr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | Space( )
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | CharList
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | String( )
+| | | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | | | | | | | | AssignmentStatement
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Id(i)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | IntExpr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Digit(1)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Intop(+)
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | Expr
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Id(i)
+| | | | | | | | | | | | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | | | StatementList
+
+Abstract Syntax Tree
+Program
+| Block
+| | VarDecl
+| | | int
+| | | i
+| | AssignmentStatement
+| | | i
+| | | 1
+| | WhileStatement
+| | | BooleanExpr
+| | | | BooleanExpr
+| | | | | i
+| | | | | ==
+| | | | | 8
+| | | | ==
+| | | | false
+| | | | Block
+| | | | | IfStatement
+| | | | | | BooleanExpr
+| | | | | | | i
+| | | | | | | ==
+| | | | | | | 1
+| | | | | | | Block
+| | | | | | | | PrintStatement
+| | | | | | | | | "begin "
+| | | | | PrintStatement
+| | | | | | "loop "
+| | | | PrintStatement
+| | | | | i
+| | | | PrintStatement
+| | | | | " "
+| | | AssignmentStatement
+| | | | i
+| | | | IntExpr
+| | | | | 1
+| | | | | +
+| | | | | i
