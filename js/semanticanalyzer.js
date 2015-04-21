@@ -20,10 +20,10 @@ function analyzer() {
 		printOutput("Symbol Table:");
 		symbolTable = "";
 		buildSymbolTable(environ);
+		printOutput("<hr />");
 		if (symbolTable != "") {
 			printOutput(symbolTable);
 		}
-		printOutput("<hr />");
 		ast = new Node();
 		ast.contents = { name:"AST" };
 		currentASTNode = ast;

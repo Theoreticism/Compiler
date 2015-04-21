@@ -134,7 +134,7 @@ function lexer() {
 		}
 		
 		// Matching assignment or boolops
-		if (currentChar.match(/\!|\=/)) {
+		if (currentChar.match(/\!|\=|\?/)) {
 			var lookAhead = source[index+1];
 			if (inString) {
 				printOutput("Lex Error: Invalid character detected in string at line {0} character {1}.".format(lineNumber, linePosition - textBuffer.get().length));
@@ -151,7 +151,7 @@ function lexer() {
 					index++;
 					tokenized = true;
 				} else if (currentChar === '!') {
-					printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(textBuffer.get(), lineNumber, linePosition - textBuffer.get().length));
+					printOutput("Lex Error: Invalid token '{0}' at line {1} character {2}.".format(currentChar, lineNumber, linePosition - textBuffer.get().length + 1));
 					return;
 				} else {
 					idToken(lineNumber, linePosition, currentChar);
@@ -180,6 +180,7 @@ function lexer() {
 			printOutput("Lex Error: Invalid uppercase alphanumeric character detected in string at line {0} character {1}.".format(lineNumber, linePosition - textBuffer.get().length));
 			return;
 		}
+		
 		
 		// Matching in string, lowercase alphabetic character
 		if (currentChar.match(/[a-z]/) && inString && !tokenized) {
