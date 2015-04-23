@@ -10,7 +10,6 @@ Visit https://github.io/chriskwlee/Compiler for the most up-to-date web version 
 
 Alternatively, get the most up-to-date source code from Christopher Lee's GitHub code repository at https://github.com/chriskwlee/Compiler.
 
-
 III. Running
 
 Open the corresponding HTML file linked to the JavaScript compiler. Insert code to be compiled, then run.
