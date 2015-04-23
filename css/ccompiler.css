@@ -1,6 +1,6 @@
 /* CCompiler.css */
 
-body {
+html, body {
 	background-color: #FFFFFF;
 	font-family:Monospace;
 }
@@ -28,6 +28,8 @@ h1 {
 	top: 0px;
 	left: 100px;
 	bottom: 45px;
+	height: 94%;
+	width: 23.45%;
 }
 
 #output {
@@ -42,6 +44,8 @@ h1 {
 	font-size: 12pt;
 	padding: 5px;
 	word-break: break-all;
+	height: 98.5%;
+	width: 36.15%;
 }
 
 #cst {
@@ -56,6 +60,8 @@ h1 {
 	font-size: 12pt;
 	padding: 5px;
 	word-break: break-all;
+	height: 47.3%;
+	width: 26%;
 }
 
 #ast {
@@ -70,6 +76,8 @@ h1 {
 	font-size: 12pt;
 	padding: 5px;
 	word-break: break-all;
+	height: 47.5%;
+	width: 26%;
 }
 
 #compile {
@@ -87,6 +95,8 @@ h1 {
 	padding-top: 5px;
 	border: 1px solid black;
 	cursor: pointer;
+	height: 2.9%;
+	width: 11.2%;
 }
 
 #verbose {
@@ -104,4 +114,6 @@ h1 {
 	padding-top: 5px;
 	border: 1px solid black;
 	cursor: pointer;
+	height: 2.9%;
+	width: 11.2%;
 }
