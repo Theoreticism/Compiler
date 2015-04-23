@@ -81,7 +81,7 @@ function analyzeNode(cst) {
 					}
 					
 					if (idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, value, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, idType, value));
 						return false;
 					} else {
 						printVerbose("Type check match: int to int");
@@ -93,7 +93,7 @@ function analyzeNode(cst) {
 					printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected IntExpr, got {2}".format(lineNum, linePos, tName));
 					return false;
 				} else {
-					printVerbose("Type check match: '{0}' to 'int'".format(idType));
+					printVerbose("Type check match: 'int' to 'int'");
 				}
 			}
 			break;
@@ -136,7 +136,7 @@ function analyzeNode(cst) {
 				case 'Expr':
 					var expType = cst.parent.parent.contents.name;
 					if (expType == "IntExpr" && idType != "int") {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, value, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, idType, value));
 						return false;
 					} else if (expType == "BooleanExpr") {
 						var comparedToken = cst.parent.children[2].children[0];
@@ -147,7 +147,7 @@ function analyzeNode(cst) {
 							expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
 						}
 						if (idType != expectedType) {
-							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
+							printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, idType, expectedType));
 							return false;
 						} else {
 							printVerbose("Type check match: '{0}' to '{1}'".format(idType, expectedType));
@@ -166,7 +166,7 @@ function analyzeNode(cst) {
 						expectedType = expectedType.substr(0, expectedType.length - 4).toLowerCase();
 					}
 					if (idType != expectedType) {
-						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, expectedType, idType));
+						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be '{3}', got '{4}'".format(lineNum, linePos, value, idType, expectedType));
 						return false;
 					} else {
 						printVerbose("Type check match: '{0}' to '{1}'".format(idType, expectedType));
@@ -228,7 +228,10 @@ function buildAST(node) {
 				var astNode = new Node();
 				var nodeContents;
 				
-				if (node.contents.name == "String") {
+				// Special case for Strings of length 0
+				if (node.contents.name == "String" && node.contents.token == undefined) {
+					nodeContents = '| ""';
+				} else if (node.contents.name == "String" && node.contents.token != undefined) {
 					nodeContents = '| "{0}"'.format(node.contents.token.value);
 				} else if (node.contents.name == "Intop") {
 					nodeContents = "+";
