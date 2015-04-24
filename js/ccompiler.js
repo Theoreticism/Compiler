@@ -37,10 +37,12 @@ function init() {
 			} else {
 				printOutput("Parse unsuccessful.");
 				printCSTOutput("Parse Error: See main output window.");
+				printASTOutput("Parse Error: See main output window.");
 			}
 		} else {
 			printOutput("Lex unsuccessful.");
 			printCSTOutput("Lex Error: See main output window.");
+			printASTOutput("Lex Error: See main output window.");
 		}
 	});
 	
