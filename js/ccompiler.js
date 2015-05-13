@@ -30,6 +30,12 @@ function init() {
 				printOutput("Analyzing semantics...");
 				if (analyzer()) {
 					printOutput("Semantic analysis successful!<hr />");
+					printOutput("Generating code...");
+					if (codegen()) {
+						printOutput("Code generation successful!<hr />");
+					} else {
+						printOutput("Code generation unsuccessful.");
+					}
 				} else {
 					printOutput("Semantic analysis unsuccessful.");
 					printASTOutput("Semantics Error: See main output window.");

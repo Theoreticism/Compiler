@@ -32,7 +32,7 @@ function codegen() {
 	}
 	backpatch();
 	fillUnusedWithZeroes();
-	// output result?
+	printOutput("<br />" + getRuntimeEnvironment());
 	return true;
 }
 
@@ -201,8 +201,103 @@ function generateVarDecl(node) {
 	}
 }
 
+/**
+ * Handles generation of 6502a machine code for print statements. This includes
+ * all numbers, digits, expressions and statements.
+ *
+ * @param {Node} node The given node in the AST
+ */
 function generatePrintStatement(node) {
+	var output = node.children[0].contents.name;
 	
+	// Print number
+	if ("1234567890".indexOf(output) != -1) {
+		insertCode("A0 " + toByte(output));
+		insertCode("A2 01 FF");
+	} else if (output == "true") {
+		writeStringToHeap("true");
+		// Load accumulator into y register, then syscall
+		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A2 02 FF");
+	} else if (output == "false") {
+		writeStringToHeap("false");
+		// Load accumulator into y register, then syscall
+		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A2 02 FF");
+	// Print string
+	} else if (output.substr(0, 1) == '"') {
+		writeStringTOHeap(output.substr(1, output.length - 2));
+		// Load accumulator into y register, then syscall
+		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A2 02 FF");
+	// Print ID
+	} else if (output.indexOf("Expr") == -1) {
+		switch (getType(output, getScope(currentEnvNode))) {
+			case "boolean":
+				// Load 1 into x register, test var, jump over true part if var = 0
+				insertCode("A2 01");
+				insertCode("EC " + getTempCode(output, getScope(currentEnvNode)));
+				insertCode("D0 0C");
+				
+				// TRUE PART
+				writeStringToHeap("true");
+				// Load accumulator into y register, then syscall
+				insertCode("A0 " + toByte(heapPointer + 1));
+				insertCode("A2 02 FF");
+				// Load 0 into x register, test var, jump over false part if var = 1
+				insertCode("A2 00");
+				insertCode("EC " + getTempCode(output, getScope(currentEnvNode)));
+				insertCode("D0 05");
+				
+				// FALSE PART
+				writeStringToHeap("false");
+				// Load accumulator into y register, then syscall
+				insertCode("A0 " + toByte(heapPointer + 1));
+				insertCode("A2 02 FF");
+				break;
+			case "int":
+				// Load y register from memory, then syscall
+				insertCode("AC " + getTempCode(output, getScope(currentEnvNode)));
+				insertCode("A2 01 FF");
+				break;
+			case "string":
+				// Load y register from memory, then syscall
+				insertCode("AC " + getTempCode(output, getScope(currentEnvNode)));
+				insertCode("A2 02 FF");
+				break;
+		}
+	// Print Expr
+	} else {
+		node = node.children[0];
+		window["generate" + node.contents.name](node);
+		if (node.contents.name == "BooleanExpr") {
+			insertCode("D0 11");
+			
+			// TRUE PART
+			writeStringToHeap("true");
+			// Load accumulator into y register, then syscall
+			insertCode("A0 " + toByte(heapPointer + 1));
+			insertCode("A2 02 FF");
+			// Load 0 into x register
+			insertCode("A2 00");
+			// Load 1 into temp register
+			insertCode("A9 01 8D T1 XX");
+			// Test variable
+			insertCode("EC T1 XX");
+			// Jump over false part if var = 1;
+			insertCode("D0 05");
+			
+			// FALSE PART
+			writeStringToHeap("false");
+			// Load accumulator into y register, then syscall
+			insertCode("A0 " + toByte(heapPointer + 1));
+			insertCode("A2 02 FF");
+		} else {
+			// Load accumulator into y register, then syscall
+			insertCode("AC T1 XX");
+			insertCode("A2 01 FF");
+		}
+	}
 }
 
 /**
