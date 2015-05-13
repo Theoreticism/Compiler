@@ -22,6 +22,8 @@ function codegen() {
 		vartype: "int",
 		address: 0
 	}];
+	jumps = {};
+	jumpNum = 0;
 	stackPointer = 0;
 	heapPointer = 255;
 	stackOverflow = false;
@@ -133,14 +135,14 @@ function toBytes(str) {
  * Sorts static data by decreasing scope length. This enables iteration over 
  * the static data to get the first partial match to get the correct scope.
  *
- * This function is being used in the getTempCode() and getType() functions'
+ * This function is being used in the getTempCode() and getVarType() functions'
  * sort calls as a parameter: the compare function that defines sort order.
  *
  * @param {list} a List representing the first static data
  * @param {list} b List representing the second static data
  * @return {integer} Decreased scope length
  */
-function sortStaticCode(a, b) {
+function sortStaticData(a, b) {
 	return b.scope.length - a.scope.length;
 }
 
@@ -153,7 +155,7 @@ function sortStaticCode(a, b) {
  * @return {String} Temp code for the code
  */
 function getTempCode(varName, scope) {
-	staticData.sort(sortStaticCode);
+	staticData.sort(sortStaticData);
 	for (var i = 0; i < staticData.length; i++) {
 		if (staticData[i].varname == varName && scope.indexOf(staticData[i].scope) == 0) {
 			return staticData[i].temp;
@@ -168,8 +170,9 @@ function getTempCode(varName, scope) {
  * @param {integer} scope Scope of the variable for which type is being read
  * @return {String} Variable type
  */
-function getType(varName, scope) {
-	staticData.sort(sortStaticCode);
+function getVarType(varName, scope) {
+	printOutput(staticData[0]);
+	staticData.sort(sortStaticData);
 	for (var i = 0; i < staticData.length; i++) {
 		if (staticData[i].varname == varName && scope.indexOf(staticData[i].scope) == 0) {
 			return staticData[i].vartype;
@@ -232,7 +235,7 @@ function generatePrintStatement(node) {
 		insertCode("A2 02 FF");
 	// Print ID
 	} else if (output.indexOf("Expr") == -1) {
-		switch (getType(output, getScope(currentEnvNode))) {
+		switch (getVarType(output, getScope(currentEnvNode))) {
 			case "boolean":
 				// Load 1 into x register, test var, jump over true part if var = 0
 				insertCode("A2 01");
@@ -433,9 +436,9 @@ function generateBooleanExpr(node) {
 	} else if (left == "false") {
 		insertCode("A2 00");
 	} else if (left.substr(0, 1) == '"') {
-		insertCode("AE " + getTempCode(left, getScope(currentEnvNode))
+		insertCode("AE " + getTempCode(left, getScope(currentEnvNode)));
 	} else if (left.indexOf("Expr") == -1) {
-		switch (getType(left, getScope(currentEnvNode))) {
+		switch (getVarType(left, getScope(currentEnvNode))) {
 			case "int":
 			case "boolean":
 				insertCode("AE " + getTempCode(left, getScope(currentEnvNode)));
@@ -463,8 +466,8 @@ function generateBooleanExpr(node) {
 		insertCode("A9 00");
 	} else if (right.substr(0, 1) == '"') {
 		insertCode("AD " + getTempCode(right, getScope(currentEnvNode)));
-	} else if (right.indexOf("Expr" == -1) {
-		switch (getType(right, getScope(currentEnvNode))) {
+	} else if (right.indexOf("Expr" == -1)) {
+		switch (getVarType(right, getScope(currentEnvNode))) {
 			case "int":
 			case "boolean":
 				insertCode("AD " + getTempCode(right, getScope(currentEnvNode)));
@@ -481,6 +484,7 @@ function generateBooleanExpr(node) {
 		insertCode("8D T1 XX");
 		// Complete comparison
 		insertCode("EC T1 XX");
+	}
 }
 
 function generateBlock(node) {
