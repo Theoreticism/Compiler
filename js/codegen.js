@@ -28,7 +28,8 @@ function codegen() {
 	heapPointer = 255;
 	stackOverflow = false;
 	currentEnvNode = environ;
-	success = beginCodeGen(ast.children[0]);
+	// AST -> Program -> Block start
+	success = beginCodeGen(ast.children[0].children[0]);
 	if (!success) {
 		return false;
 	}
@@ -46,10 +47,11 @@ function codegen() {
  * @return {boolean} True if stack did not overflow, false otherwise
  */
 function beginCodeGen(ast) {
+	printOutput(ast.contents.name);
 	// Calls generate function for the ast node specified (non-leaf nodes only)
 	if (ast.children.length > 0) {
-		printOutput("Generating code for " + node.contents.name);
-		window["generate" + node.contents.name](ast);
+		printOutput("Generating code for " + ast.contents.name + ".");
+		window["generate" + ast.contents.name](ast);
 		if (stackOverflow) {
 			printOutput("Codegen Error: Stack Overflow!");
 			return false;
@@ -57,15 +59,15 @@ function beginCodeGen(ast) {
 	}
 	
 	// Block start, move scope pointer down to first child
-	if (node.contents.name == "Block") {
+	if (ast.contents.name == "Block") {
 		currentEnvNode = currentEnvNode.children[0];
 	}
 	
 	// Recurse on non-statement children
-	if (node.contents.name.indexOf("Statement") == -1) {
-		for (var i = 0; i < node.children.length; i++) {
+	if (ast.contents.name.indexOf("Statement") == -1) {
+		for (var i = 0; i < ast.children.length; i++) {
 			if (!stackOverflow) {
-				beginCodeGen(node.children[i]);
+				beginCodeGen(ast.children[i]);
 			} else {
 				return false;
 			}
@@ -73,7 +75,7 @@ function beginCodeGen(ast) {
 	}
 	
 	// Block end, move scope pointer up to parent
-	if (node.contents.name == "Block") {
+	if (ast.contents.name == "Block") {
 		currentEnvNode = currentEnvNode.parent;
 		// Splice: at position 0, remove 1 item; don't need info from node anymore
 		currentEnvNode.children.splice(0, 1);
@@ -107,7 +109,7 @@ function insertCode(code) {
 function writeStringToHeap(str) {
 	heapPointer = heapPointer - str.length;
 	for (var i = 0; i < str.length; i++) {
-		runtimeEnviron[heapPointer] = toByte(str.charCodeAt(i));
+		runtimeEnviron[heapPointer] = toBytes(str.charCodeAt(i));
 		heapPointer++;
 	}
 	runtimeEnviron[heapPointer] = "00";
@@ -126,9 +128,9 @@ function toBytes(str) {
 	}
 	var hexVal = parseInt(str).toString(16).toUpperCase();
 	if (hexVal.length == 1) {
-		hex = "0" + hex;
+		hexVal = "0" + hexVal;
 	}
-	return hex;
+	return hexVal;
 }
 
 /**
@@ -171,7 +173,6 @@ function getTempCode(varName, scope) {
  * @return {String} Variable type
  */
 function getVarType(varName, scope) {
-	printOutput(staticData[0]);
 	staticData.sort(sortStaticData);
 	for (var i = 0; i < staticData.length; i++) {
 		if (staticData[i].varname == varName && scope.indexOf(staticData[i].scope) == 0) {
@@ -200,7 +201,7 @@ function generateVarDecl(node) {
 	});
 	
 	if (type == "int" || type == "boolean") {
-		insertCode("A9 00 8D T{0} XX".format(n));
+		insertCode("A9 00 8D T{0} XX".format(tempNum));
 	}
 }
 
@@ -325,7 +326,7 @@ function generateAssignmentStatement(node) {
 		if (value.substr(0, 1) != '"') {
 			// Value is a digit
 			if ("1234567890".indexOf(value) != -1) {
-				value = toByte(value);
+				value = toBytes(value);
 				insertCode("A9 {0} 8D {1}".format(value, getTempCode(name, getScope(currentEnvNode))));
 			// Value is an ID
 			} else {
@@ -334,7 +335,7 @@ function generateAssignmentStatement(node) {
 		// Value is a string
 		} else {
 			writeStringToHeap(value.substr(1, value.length - 2));
-			insertCode("AD {0} 8D {1}".format(toByte(heapPointer + 1), getTempCode(name, getScope(currentEnvNode))));
+			insertCode("AD {0} 8D {1}".format(toBytes(heapPointer + 1), getTempCode(name, getScope(currentEnvNode))));
 		}
 	// Right side is an expression; call and store to memory
 	} else {
@@ -459,7 +460,7 @@ function generateBooleanExpr(node) {
 	
 	// Evaluate right side into temp register
 	if ("1234567890".indexOf(right) != -1) {
-		insertCode("A9 " + toByte(right));
+		insertCode("A9 " + toBytes(right));
 	} else if (right == "true") {
 		insertCode("A9 01");
 	} else if (right == "false") {
@@ -524,7 +525,7 @@ function backpatch() {
 	for (var i = 1; i <= jumpNum; i++) {
 		var hexVal = jumps["J" + i].toString(16).toUpperCase();
 		while (hexVal.length < 2) {
-			hexVal = "0" + hex;
+			hexVal = "0" + hexVal;
 		}
 		
 		printOutput("J{0} -> {1}".format(i, hexVal));
