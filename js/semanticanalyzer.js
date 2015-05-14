@@ -211,6 +211,7 @@ function newNode(contents) {
 function buildAST(node) {
 	var string;
 	var build = false;
+	
 	// Some type of statement (print, while, if, etc.)
 	if (((node.contents.name.indexOf("Statement") > 0) || 
 		// Non-statement or node with multiple children
@@ -230,9 +231,9 @@ function buildAST(node) {
 				
 				// Special case for Strings of length 0
 				if (node.contents.name == "String" && node.contents.token == undefined) {
-					nodeContents = '| ""';
+					nodeContents = '""';
 				} else if (node.contents.name == "String" && node.contents.token != undefined) {
-					nodeContents = '| "{0}"'.format(node.contents.token.value);
+					nodeContents = '"{0}"'.format(node.contents.token.value);
 				} else if (node.contents.name == "Intop") {
 					nodeContents = "+";
 				} else {
@@ -257,7 +258,7 @@ function buildAST(node) {
 	}
 	
 	// Reached leaf node and current AST node not Block, return to parent
-	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && node.contents.name != "Char" && node.contents.name != "Space") {
+	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && currentASTNode.contents.name != "AssignmentStatement" && node.contents.name != "Char" && node.contents.name != "Space") {
 		currentASTNode = currentASTNode.parent;
 	}
 	
@@ -309,6 +310,11 @@ function printASTNode(n) {
  * @param {String} name Name of the AST node
  */
 function insertASTNode(name) {
+	if (DEBUG) {
+		printOutput("CURRENT AST NODE: " + currentASTNode.contents.name);
+		printOutput("CHILD: " + name);
+	}
+	
 	var node = new Node();
 	node.contents = [];
 	node.contents.name = name;
