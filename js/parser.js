@@ -67,31 +67,6 @@ function checkToken(cToken) {
 }
 
 /**
- * Creates a special case node specifically for Strings for the purpose of storing full string contents.
- *
- * @param {String} n The production for which a special case node is to be created
- */
-function insertStringNode(n) {
-	var node = new Node();
-	
-	if (DEBUG) {
-		printOutput("*DEBUG MODE* " + currentToken.type.substr(2) + " | " + n + " OTHERNODE");
-	}
-	
-	// Fill contents with value n as name
-	node.contents = { name: n };
-	
-	// Assign a parent (current node)
-	node.parent = currentCSTNode;
-	
-	// Go to parent's children
-	currentCSTNode.children.push(node);
-	
-	// Update current node
-	currentCSTNode = node;
-}
-
-/**
  * Creates a branch node for the Concrete Syntax Tree.
  *
  * @param {String} n The production for which a branch node is to be created
@@ -391,14 +366,21 @@ function parseStringExpr() {
 	if (!panic) {
 		var node = new Node();
 		checkToken("T_Quote");
+		// Special case: String of length 0
 		if (currentToken.type == "T_Quote") {
 			branchNode("CharList");
-			insertStringNode("String");
+			node.contents = { name: "String" };
+			node.parent = currentCSTNode;
+			currentCSTNode.children.push(node);
+			currentCSTNode = node;
 			checkToken("T_Quote");
 			returnToParent();
 		} else {
 			branchNode("CharList");
-			insertStringNode("String");
+			node.contents = { name: "String", token: currentToken };
+			node.parent = currentCSTNode;
+			currentCSTNode.children.push(node);
+			currentCSTNode = node;
 			checkToken("T_String");
 			checkToken("T_Quote");
 			returnToParent();

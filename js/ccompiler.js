@@ -30,6 +30,12 @@ function init() {
 				printOutput("Analyzing semantics...");
 				if (analyzer()) {
 					printOutput("Semantic analysis successful!<hr />");
+					printOutput("Generating code...");
+					if (codegen()) {
+						printOutput("Code generation successful!<hr />");
+					} else {
+						printOutput("Code generation unsuccessful.");
+					}
 				} else {
 					printOutput("Semantic analysis unsuccessful.");
 					printASTOutput("Semantics Error: See main output window.");
@@ -37,10 +43,12 @@ function init() {
 			} else {
 				printOutput("Parse unsuccessful.");
 				printCSTOutput("Parse Error: See main output window.");
+				printASTOutput("Parse Error: See main output window.");
 			}
 		} else {
 			printOutput("Lex unsuccessful.");
 			printCSTOutput("Lex Error: See main output window.");
+			printASTOutput("Lex Error: See main output window.");
 		}
 	});
 	
