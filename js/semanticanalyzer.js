@@ -257,7 +257,7 @@ function buildAST(node) {
 		buildAST(node.children[i]);
 	}
 	
-	// Reached leaf node and current AST node not Block, return to parent
+	// Reached leaf node and current AST node not Block or AssignmentStatement, return to parent
 	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && currentASTNode.contents.name != "AssignmentStatement" && node.contents.name != "Char" && node.contents.name != "Space") {
 		currentASTNode = currentASTNode.parent;
 	}
@@ -311,8 +311,8 @@ function printASTNode(n) {
  */
 function insertASTNode(name) {
 	if (DEBUG) {
-		printOutput("CURRENT AST NODE: " + currentASTNode.contents.name);
-		printOutput("CHILD: " + name);
+		printOutput("*DEBUG MODE* Current AST node contents: " + currentASTNode.contents.name);
+		printOutput("*DEBUG MODE* Current child: " + name);
 	}
 	
 	var node = new Node();
