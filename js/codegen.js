@@ -47,10 +47,9 @@ function codegen() {
  * @return {boolean} True if stack did not overflow, false otherwise
  */
 function beginCodeGen(ast) {
-	printOutput(ast.contents.name);
 	// Calls generate function for the ast node specified (non-leaf nodes only)
 	if (ast.children.length > 0) {
-		printOutput("Generating code for " + ast.contents.name + ".");
+		printVerbose("Generating code for " + ast.contents.name + ".");
 		window["generate" + ast.contents.name](ast);
 		if (stackOverflow) {
 			printOutput("Codegen Error: Stack Overflow!");
@@ -357,6 +356,7 @@ function generateWhileStatement(node) {
  */
 function generateIfStatement(node) {
 	var condition = node.children[0].contents.name;
+	
 	if (condition == "true") {
 		beginCodeGen(node.children[1]);
 	} else if (condition == "false") {
@@ -371,7 +371,7 @@ function generateIfStatement(node) {
 		var jn = jumpNum;
 		jumps["J" + jn] = "?";
 		insertCode("D0 J" + jn);
-		
+		printOutput(node.children[1].contents.name);
 		beginCodeGen(node.children[1]);
 		
 		// Backpatch
@@ -387,7 +387,7 @@ function generateIfStatement(node) {
  * @param {Node} node The given node in the AST
  */
 function generateIntExpr(node) {
-	//printOutput("Generating IntExpr code);
+	printVerbose("Generating code for IntExpr.");
 	var digit = node.children[0].contents.name;
 	var digit2 = node.children[2].contents.name;
 	
@@ -424,7 +424,7 @@ function generateIntExpr(node) {
  * @param {Node} node The given node in the AST
  */
 function generateBooleanExpr(node) {
-	//printOutput("Generating BooleanExpr code);
+	printVerbose("Generating code for BooleanExpr.");
 	var left = node.children[0].contents.name;
 	var operation = node.children[1].contents.name;
 	var right = node.children[2].contents.name;

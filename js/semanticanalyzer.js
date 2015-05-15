@@ -139,7 +139,7 @@ function analyzeNode(cst) {
 						printOutput("Semantic Error: Type mismatch on line {0} character {1}. Expected '{2}' to be 'int', got '{3}'".format(lineNum, linePos, idType, value));
 						return false;
 					} else if (expType == "BooleanExpr") {
-						var comparedToken = cst.parent.children[2].children[0];
+						var comparedToken = cst.parent.parent.children[2].children[0];
 						var expectedType = comparedToken.contents.name;
 						if (expectedType == "Id") {
 							expectedType = getType(currentEnvNode, comparedToken.contents.token.value);
@@ -264,9 +264,7 @@ function buildAST(node) {
 	
 	// Reached branch node or Block node or Print node, return to parent if not null
 	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && node.contents.name != "CharList" && build == true) {
-		if (currentASTNode != null) {
-			currentASTNode = currentASTNode.parent;
-		}
+		currentASTNode = currentASTNode.parent;
 	}
 }
 

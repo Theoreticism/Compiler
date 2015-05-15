@@ -173,8 +173,8 @@ function printCSTNode(n) {
 function parseProgram() {
 	if (!panic) {
 		branchNode("Block");
-		checkToken("T_EOF");
 		returnToParent();
+		checkToken("T_EOF");
 		success = true;
 	}
 }
@@ -187,8 +187,8 @@ function parseBlock() {
 	if (!panic) {
 		checkToken("T_LBrace");
 		branchNode("StatementList");
-		checkToken("T_RBrace");
 		returnToParent();
+		checkToken("T_RBrace");
 	}
 }
 
@@ -254,8 +254,8 @@ function parsePrintStatement() {
 		checkToken("T_Print");
 		checkToken("T_LParen");
 		branchNode("Expr");
-		checkToken("T_RParen");
 		returnToParent();
+		checkToken("T_RParen");
 	}
 }
 
@@ -306,6 +306,7 @@ function parseVarDecl() {
 	if (!panic) {
 		leafNode("Type");
 		leafNode("Id");
+		returnToParent();
 	}
 }
 
@@ -334,6 +335,7 @@ function parseExpr() {
 				break;
 			case 'T_Id':
 				leafNode("Id");
+				returnToParent();
 				break;
 			default:
 				printOutput("Parse Error: Expected {0}, got {1} at line {2} character {3}".format("T_Digit | T_Quote | T_LParen | T_Boolval | T_Id", currentToken.type, currentToken.lineNumber, currentToken.linePosition));
@@ -355,6 +357,7 @@ function parseIntExpr() {
 			branchNode("Expr");
 			returnToParent();
 		}
+		returnToParent();
 	}
 }
 
@@ -404,6 +407,7 @@ function parseBooleanExpr() {
 			returnToParent();
 		} else if (currentToken.type == "T_Boolval") {
 			leafNode("Boolval");
+			returnToParent();
 		}
 	}
 }
