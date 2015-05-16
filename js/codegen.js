@@ -215,23 +215,23 @@ function generatePrintStatement(node) {
 	
 	// Print number
 	if ("1234567890".indexOf(output) != -1) {
-		insertCode("A0 " + toByte(output));
+		insertCode("A0 " + toBytes(output));
 		insertCode("A2 01 FF");
 	} else if (output == "true") {
 		writeStringToHeap("true");
 		// Load accumulator into y register, then syscall
-		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A0 " + toBytes(heapPointer + 1));
 		insertCode("A2 02 FF");
 	} else if (output == "false") {
 		writeStringToHeap("false");
 		// Load accumulator into y register, then syscall
-		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A0 " + toBytes(heapPointer + 1));
 		insertCode("A2 02 FF");
 	// Print string
 	} else if (output.substr(0, 1) == '"') {
-		writeStringTOHeap(output.substr(1, output.length - 2));
+		writeStringToHeap(output.substr(1, output.length - 2));
 		// Load accumulator into y register, then syscall
-		insertCode("A0 " + toByte(heapPointer + 1));
+		insertCode("A0 " + toBytes(heapPointer + 1));
 		insertCode("A2 02 FF");
 	// Print ID
 	} else if (output.indexOf("Expr") == -1) {
@@ -245,7 +245,7 @@ function generatePrintStatement(node) {
 				// TRUE PART
 				writeStringToHeap("true");
 				// Load accumulator into y register, then syscall
-				insertCode("A0 " + toByte(heapPointer + 1));
+				insertCode("A0 " + toBytes(heapPointer + 1));
 				insertCode("A2 02 FF");
 				// Load 0 into x register, test var, jump over false part if var = 1
 				insertCode("A2 00");
@@ -255,7 +255,7 @@ function generatePrintStatement(node) {
 				// FALSE PART
 				writeStringToHeap("false");
 				// Load accumulator into y register, then syscall
-				insertCode("A0 " + toByte(heapPointer + 1));
+				insertCode("A0 " + toBytes(heapPointer + 1));
 				insertCode("A2 02 FF");
 				break;
 			case "int":
@@ -279,7 +279,7 @@ function generatePrintStatement(node) {
 			// TRUE PART
 			writeStringToHeap("true");
 			// Load accumulator into y register, then syscall
-			insertCode("A0 " + toByte(heapPointer + 1));
+			insertCode("A0 " + toBytes(heapPointer + 1));
 			insertCode("A2 02 FF");
 			// Load 0 into x register
 			insertCode("A2 00");
@@ -293,7 +293,7 @@ function generatePrintStatement(node) {
 			// FALSE PART
 			writeStringToHeap("false");
 			// Load accumulator into y register, then syscall
-			insertCode("A0 " + toByte(heapPointer + 1));
+			insertCode("A0 " + toBytes(heapPointer + 1));
 			insertCode("A2 02 FF");
 		} else {
 			// Load accumulator into y register, then syscall
@@ -371,7 +371,7 @@ function generateIfStatement(node) {
 		var jn = jumpNum;
 		jumps["J" + jn] = "?";
 		insertCode("D0 J" + jn);
-		printOutput(node.children[1].contents.name);
+		
 		beginCodeGen(node.children[1]);
 		
 		// Backpatch
@@ -392,11 +392,11 @@ function generateIntExpr(node) {
 	var digit2 = node.children[2].contents.name;
 	
 	if (node.parent.contents.name.indexOf("Statement") != -1) {
-		insertCode("A9 " + toByte(digit));
+		insertCode("A9 " + toBytes(digit));
 	// Nested IntExpr
 	} else {
 		insertCode("8D T1 XX");
-		insertCode("A9 " + toByte(digit));
+		insertCode("A9 " + toBytes(digit));
 		insertCode("6D T1 XX");
 	}
 	
@@ -405,7 +405,7 @@ function generateIntExpr(node) {
 		
 		// Number or ID, load accumulator from memory
 		if ("1234567890".indexOf(digit2) != -1) {
-			insertCode("A9 " + toByte(digit2));
+			insertCode("A9 " + toBytes(digit2));
 		} else {
 			insertCode("AD " + getTempCode(digit2, getScope(currentEnvNode)));
 		}
@@ -431,7 +431,7 @@ function generateBooleanExpr(node) {
 	
 	// Evaluate left side into x register
 	if ("1234567890".indexOf(left) != -1) {
-		insertCode("A2 " + toByte(left));
+		insertCode("A2 " + toBytes(left));
 	} else if (left == "true") {
 		insertCode("A2 01");
 	} else if (left == "false") {
@@ -481,11 +481,12 @@ function generateBooleanExpr(node) {
 		node = node.children[2];
 		// Call expression, set accumulator to result
 		window["generate" + node.contents.name](node);
-		// Store accumulator in temp
-		insertCode("8D T1 XX");
-		// Complete comparison
-		insertCode("EC T1 XX");
 	}
+	
+	// Store accumulator in temp
+	insertCode("8D T1 XX");
+	// Complete comparison
+	insertCode("EC T1 XX");
 }
 
 function generateBlock(node) {
@@ -517,7 +518,6 @@ function backpatch() {
 				runtimeEnviron[j+1] = byte2;
 			}
 		}
-		
 		insertCode("00");
 	}
 	

@@ -189,6 +189,7 @@ function parseBlock() {
 		branchNode("StatementList");
 		returnToParent();
 		checkToken("T_RBrace");
+		returnToParent();
 	}
 }
 
@@ -386,8 +387,7 @@ function parseStringExpr() {
 			currentCSTNode = node;
 			checkToken("T_String");
 			checkToken("T_Quote");
-			returnToParent();
-			returnToParent();
+			currentCSTNode = currentCSTNode.parent.parent.parent;
 		}
 	}
 }
