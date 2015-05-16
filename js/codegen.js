@@ -334,7 +334,7 @@ function generateAssignmentStatement(node) {
 		// Value is a string
 		} else {
 			writeStringToHeap(value.substr(1, value.length - 2));
-			insertCode("AD {0} 8D {1}".format(toBytes(heapPointer + 1), getTempCode(name, getScope(currentEnvNode))));
+			insertCode("A9 {0} 8D {1}".format(toBytes(heapPointer + 1), getTempCode(name, getScope(currentEnvNode))));
 		}
 	// Right side is an expression; call and store to memory
 	} else {
