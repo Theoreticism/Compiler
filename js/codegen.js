@@ -52,7 +52,7 @@ function beginCodeGen(ast) {
 		printVerbose("Generating code for " + ast.contents.name + ".");
 		window["generate" + ast.contents.name](ast);
 		if (stackOverflow) {
-			printOutput("Codegen Error: Stack Overflow!");
+			printOutput("Codegen Error: Stack overflow!");
 			return false;
 		}
 	}

@@ -189,7 +189,6 @@ function parseBlock() {
 		branchNode("StatementList");
 		returnToParent();
 		checkToken("T_RBrace");
-		returnToParent();
 	}
 }
 
