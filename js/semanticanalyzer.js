@@ -259,12 +259,14 @@ function buildAST(node) {
 	
 	// Reached leaf node and current AST node not Block or AssignmentStatement, return to parent
 	if (node.children.length == 0 && currentASTNode.contents.name != "Block" && currentASTNode.contents.name != "AssignmentStatement" && node.contents.name != "Char" && node.contents.name != "Space") {
-		currentASTNode = currentASTNode.parent;
+		if (currentASTNode != null)
+			currentASTNode = currentASTNode.parent;
 	}
 	
 	// Reached branch node or Block node or Print node, return to parent if not null
 	if ((node.children.length > 1 || node.contents.name == "Block" || node.contents.name == "PrintStatement") && node.contents.name != "CharList" && build == true) {
-		currentASTNode = currentASTNode.parent;
+		if (currentASTNode != null)
+			currentASTNode = currentASTNode.parent;
 	}
 }
 

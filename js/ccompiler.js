@@ -1,3 +1,8 @@
+/**
+ * Implement while statements
+ * Implement inequality checks
+ */
+
 var DEBUG = false;
 var verbose = false;
 var source;
@@ -33,6 +38,7 @@ function init() {
 					printOutput("Generating code...");
 					if (codegen()) {
 						printOutput("Code generation successful!<hr />");
+						printOutput("Compilation successful!");
 					} else {
 						printOutput("Code generation unsuccessful.");
 					}
